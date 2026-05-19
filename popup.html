@@ -1,0 +1,86 @@
+<!doctype html>
+
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+
+    <title>Notas Independente</title>
+
+    <link rel="stylesheet" href="popup.css" />
+
+    <link rel="stylesheet" href="quill/quill.snow.css" />
+  </head>
+
+  <body class="dark">
+    <div id="app">
+      <div id="topbar">
+        <div id="tabs-wrapper">
+          <div id="tabs"></div>
+
+          <button id="add-tab" title="Adicionar aba">+</button>
+        </div>
+
+        <div id="actions">
+          <input type="text" id="search" placeholder="Pesquisar..." />
+
+          <button id="theme-btn" class="theme-toggle" title="Tema">
+            <span class="theme-icon">🌙</span>
+          </button>
+
+          <button id="export-btn" title="Baixar nota">▼</button>
+
+          <button id="import-btn" title="Carregar nota">▲</button>
+        </div>
+      </div>
+
+      <div id="editor"></div>
+    </div>
+
+    <!-- POPUP DE SUBSTITUIR POR -->
+
+    <div id="replace-popup" class="replace-popup hidden">
+      <div class="replace-box">
+        <div class="replace-header" id="replace-drag">
+          Substituir
+          <button id="close-replace">✕</button>
+        </div>
+
+        <input id="find-input" placeholder="Localizar..." />
+
+        <input id="replace-input" placeholder="Substituir por..." />
+
+        <label class="replace-option">
+          <input type="checkbox" id="case-sensitive" />
+          Diferenciar maiúsculas/minúsculas
+        </label>
+
+        <button id="replace-all">Substituir tudo</button>
+      </div>
+    </div>
+
+    <!-- POPUP DE BAIXAR -->
+
+    <div id="export-popup" class="export-popup hidden">
+      <div class="export-box">
+        <div class="export-header">
+          Exportar nota
+          <button id="close-export">✕</button>
+        </div>
+
+        <button id="export-txt">Baixar como TXT</button>
+
+        <button id="export-pdf">Baixar como PDF</button>
+      </div>
+    </div>
+
+    <input type="file" id="import-file" hidden />
+
+    <script src="quill/quill.js"></script>
+
+    <script src="sortable/Sortable.min.js"></script>
+
+    <script src="html2pdf.bundle.min.js"></script>
+
+    <script src="popup.js"></script>
+  </body>
+</html>

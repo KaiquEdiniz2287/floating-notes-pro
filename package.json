@@ -1,0 +1,46 @@
+{
+  "name": "floating-notes-pro",
+  "version": "1.0.7",
+  "description": "Floating Notes Desktop",
+  "author": "Kaio Henrique",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder",
+    "release": "electron-builder --publish always"
+  },
+  "build": {
+    "appId": "com.kaio.floatingnotes",
+    "productName": "Floating Notes Pro",
+    "files": [
+      "**/*"
+    ],
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "KaiquEdiniz2287",
+        "repo": "floating-notes-pro"
+      }
+    ],
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "target": "nsis",
+      "icon": "assets/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    },
+    "forceCodeSigning": false
+  },
+  "devDependencies": {
+    "electron": "^42.1.0",
+    "electron-builder": "^26.8.1"
+  },
+  "dependencies": {
+    "electron-store": "^8.2.0",
+    "electron-updater": "^6.8.3"
+  }
+}

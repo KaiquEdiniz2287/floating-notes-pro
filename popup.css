@@ -1,0 +1,761 @@
+html,
+body {
+  margin: 0;
+  padding: 0;
+
+  width: 100%;
+  height: 100%;
+
+  overflow: hidden;
+
+  font-family: Arial;
+}
+
+body.dark {
+  background: #111827;
+  color: #fdfaf1;
+}
+
+body.light {
+  background: #f7e6b1;
+  color: black;
+}
+
+#app {
+  display: flex;
+  flex-direction: column;
+
+  width: 100%;
+  height: 100%;
+}
+
+#topbar {
+  height: 45px;
+
+  display: flex;
+
+  align-items: flex-end;
+
+  justify-content: space-between;
+
+  padding: 2px 12px;
+
+  border-bottom: 1px solid #374151;
+
+  gap: 12px;
+}
+
+#tabs-wrapper {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+
+  overflow-x: auto;
+
+  flex: 1;
+}
+
+#tabs {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.tab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  background: #374151;
+
+  padding: 8px 14px;
+
+  border-radius: 10px 10px 0 0;
+
+  cursor: pointer;
+}
+
+.tab.active {
+  background: #2563eb;
+  padding: 10px 15px;
+}
+
+.light .tab.active .close-tab {
+  color: white;
+}
+
+.light .tab.active .close-tab:hover {
+  color: red;
+}
+
+.tab-title {
+  outline: none;
+}
+
+.close-tab {
+  color: #13161f;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.dark .close-tab {
+  color: #f4f6fc;
+}
+
+.close-tab:hover {
+  color: red;
+}
+
+button {
+  border: none;
+
+  background: #2563eb;
+
+  color: white;
+
+  border-radius: 8px 8px 0 0;
+
+  padding: 8px 12px;
+
+  cursor: pointer;
+}
+
+#tabs-wrapper button {
+  background: none;
+}
+
+.light #add-tab {
+  color: #111827;
+}
+
+#tabs-wrapper button:hover {
+  background: #2563e8ab;
+}
+
+#actions {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+#search {
+  padding: 8px 10px;
+  background: transparent;
+  border-radius: 8px 8px 0 0px;
+
+  border: none;
+
+  width: 200px;
+}
+
+#editor {
+  flex: 1;
+
+  overflow: hidden;
+}
+
+.ql-toolbar {
+  border: none !important;
+
+  border-bottom: 1px solid #374151 !important;
+}
+
+.ql-container {
+  border: none !important;
+
+  height: calc(100% - 42px);
+
+  font-size: 16px;
+}
+
+.dark .ql-editor {
+  color: white;
+  min-height: 100%;
+}
+
+.dark .ql-toolbar {
+  background: #1f2937;
+}
+
+.dark .ql-container {
+  background: #111827;
+}
+
+/* ===================================== */
+/* DRAG TABS */
+/* ===================================== */
+
+.dragging-tab {
+  opacity: 0.5;
+}
+
+.tab {
+  user-select: none;
+
+  transition:
+    transform 0.15s ease,
+    opacity 0.15s ease;
+}
+
+.sortable-chosen {
+  cursor: grabbing;
+}
+
+.sortable-ghost {
+  opacity: 0.3;
+}
+/* ===================================== */
+/* REMOVE CHECKBOX ORIGINAL DO QUILL */
+/* ===================================== */
+
+.ql-editor li[data-list="unchecked"] > .ql-ui,
+.ql-editor li[data-list="checked"] > .ql-ui {
+  opacity: 0;
+  position: absolute;
+  left: 0;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
+/* ===================================== */
+/* CHECKLIST (SEM AFETAR BULLET/ORDERED) */
+/* ===================================== */
+
+.ql-editor li[data-list="checked"],
+.ql-editor li[data-list="unchecked"] {
+  list-style: none;
+
+  position: relative;
+
+  padding-left: 32px;
+
+  margin: 6px 0;
+
+  display: flex;
+
+  align-items: center;
+}
+
+/* ÁREA CLICÁVEL DO QUILL */
+
+.ql-editor li[data-list="checked"] > .ql-ui,
+.ql-editor li[data-list="unchecked"] > .ql-ui {
+  position: absolute;
+
+  left: 0;
+  top: 50%;
+
+  transform: translateY(-50%);
+
+  width: 20px;
+  height: 20px;
+
+  opacity: 0;
+
+  cursor: pointer;
+}
+
+/* VISUAL CUSTOM */
+
+.ql-editor li[data-list="checked"]::before,
+.ql-editor li[data-list="unchecked"]::before {
+  content: "";
+
+  position: absolute;
+
+  left: 0;
+  top: 50%;
+
+  transform: translateY(-50%);
+
+  justify-content: flex-start;
+
+  width: 12px;
+  height: 12px;
+
+  border-radius: 2px;
+
+  border: 2px solid #6b7280;
+
+  background: transparent;
+
+  transition: all 0.2s ease;
+}
+
+/* HOVER */
+
+.ql-editor li[data-list="unchecked"]:hover::before {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* CHECKED */
+
+.ql-editor li[data-list="checked"]::before {
+  content: "✓";
+
+  background: none;
+
+  border-color: white;
+
+  color: #22c55e;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  font-size: 12px;
+
+  font-weight: bold;
+}
+
+/* TEXTO */
+
+.ql-editor li[data-list="checked"] {
+  text-decoration: line-through;
+
+  opacity: 0.5;
+}
+
+/* ===================================== */
+/* REPLACE POPUP */
+/* ===================================== */
+
+.replace-popup {
+  position: fixed;
+
+  top: 50%;
+  left: 50%;
+
+  transform: translate(-50%, -50%);
+
+  z-index: 9999;
+}
+
+.light .replace-popup {
+  color: white;
+}
+
+.hidden {
+  display: none;
+}
+
+.replace-box {
+  background: #1f2937;
+
+  padding: 16px;
+
+  border-radius: 10px;
+
+  width: 300px;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 10px;
+
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.replace-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  font-weight: bold;
+}
+
+.replace-box input {
+  padding: 6px;
+
+  border-radius: 6px;
+
+  border: none;
+
+  outline: none;
+}
+
+.replace-box button {
+  padding: 8px;
+
+  border: none;
+
+  border-radius: 6px;
+
+  background: #3b82f6;
+
+  color: white;
+
+  cursor: pointer;
+}
+
+.replace-option {
+  font-size: 12px;
+}
+#replace-drag {
+  cursor: move;
+  user-select: none;
+}
+
+/* ===================================== */
+/* EXPORT POPUP */
+/* ===================================== */
+
+.export-popup {
+  position: fixed;
+
+  top: 50%;
+  left: 50%;
+
+  transform: translate(-50%, -50%);
+
+  z-index: 9999;
+}
+
+.light .export-popup {
+  color: white;
+}
+
+.export-box {
+  background: #1f2937;
+
+  padding: 16px;
+
+  border-radius: 10px;
+
+  width: 260px;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 10px;
+
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.export-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  font-weight: bold;
+}
+
+.export-box button {
+  padding: 10px;
+
+  border: none;
+
+  border-radius: 6px;
+
+  background: #3b82f6;
+
+  color: white;
+
+  cursor: pointer;
+}
+
+/* ===================================== */
+/* PDF PAGE BREAK FIX */
+/* ===================================== */
+
+.page-break {
+  page-break-before: always;
+}
+
+.ql-editor p,
+.ql-editor li,
+.ql-editor h1,
+.ql-editor h2,
+.ql-editor h3,
+.ql-editor blockquote {
+  page-break-inside: avoid;
+}
+
+.ql-editor ul,
+.ql-editor ol {
+  page-break-inside: avoid;
+}
+
+.ql-editor {
+  word-wrap: break-word;
+}
+
+/* ===================================== */
+/* LIGHT THEME */
+/* ===================================== */
+
+.light {
+  background: #f1f1f1;
+  color: #111827;
+}
+
+/* TOPBAR */
+
+.light #topbar {
+  background: #f1f1f1;
+
+  border-bottom: 1px solid #d1d5db;
+}
+
+/* TABS */
+
+.light .tab {
+  background: #dbe3ee;
+
+  color: #111827;
+}
+
+.light .tab:hover {
+  background: #cfd8e3;
+}
+
+.light .tab.active {
+  background: #3b82f6;
+
+  color: white;
+}
+
+.light .tab-title {
+  color: inherit;
+}
+
+/* SEARCH */
+
+.light #search {
+  background: #e5e7eb;
+
+  color: #111827;
+}
+
+/* BUTTONS */
+
+.light button {
+  background: #3b82f6;
+
+  color: white;
+}
+
+/* QUILL */
+
+.light .ql-toolbar {
+  background: #c9c9c9;
+  border-bottom: 1px solid #d1d5db !important;
+}
+
+.light .ql-container {
+  background: #ffffff;
+}
+
+.light .ql-editor {
+  color: #111827;
+}
+
+/* ICONS */
+
+.light .ql-stroke {
+  stroke: #111827 !important;
+}
+
+.light .ql-fill {
+  fill: #111827 !important;
+}
+
+/* PICKERS */
+
+.light .ql-picker {
+  color: #111827 !important;
+}
+
+.light .ql-picker-options {
+  background: white !important;
+}
+
+/* CODE BLOCK */
+
+.light .ql-syntax {
+  background: #e5e7eb !important;
+
+  color: #111827 !important;
+}
+
+/* ===================================== */
+/* QUILL ICONS FIX */
+/* ===================================== */
+
+.dark .ql-toolbar button {
+  color: #ffffff !important;
+}
+
+.dark .ql-toolbar button svg {
+  stroke: #ffffff !important;
+}
+
+.dark .ql-toolbar .ql-stroke {
+  stroke: #ffffff !important;
+}
+
+.dark .ql-toolbar .ql-fill {
+  fill: #ffffff !important;
+}
+
+.dark .ql-toolbar .ql-picker {
+  color: #1dbcc7 !important;
+}
+
+/* ===================================== */
+/* THEME TOGGLE */
+/* ===================================== */
+
+.theme-toggle {
+  width: 42px;
+  height: 42px;
+
+  border-radius: 12px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  transition:
+    background 0.25s ease,
+    transform 0.2s ease;
+}
+
+.theme-toggle:hover {
+  transform: scale(1.08);
+}
+
+.theme-icon {
+  font-size: 18px;
+
+  transition:
+    transform 0.4s ease,
+    opacity 0.25s ease;
+}
+
+.theme-toggle.animate .theme-icon {
+  transform: rotate(180deg) scale(1.2);
+}
+
+/* LIGHT */
+
+.light .theme-toggle {
+  background: #dbeafe;
+  color: #2563eb;
+}
+
+/* DARK */
+
+.dark .theme-toggle {
+  background: #1f2937;
+  color: #facc15;
+}
+
+/* ===================================== */
+/* CUSTOM QUILL BUTTONS */
+/* ===================================== */
+
+/* DARK */
+
+.dark .ql-uppercase,
+.dark .ql-lowercase,
+.dark .ql-capitalize {
+  color: #ffffff !important;
+}
+
+/* LIGHT */
+
+.light .ql-uppercase,
+.light .ql-lowercase,
+.light .ql-capitalize {
+  color: #111827 !important;
+}
+
+.dark .ql-picker-options {
+  background: #1f2937 !important;
+
+  border: 1px solid #374151 !important;
+}
+
+.dark .ql-picker-item {
+  color: #ffffff !important;
+}
+
+.dark .ql-picker-label {
+  color: #ffffff !important;
+}
+
+.dark .ql-picker-item:hover {
+  background: #374151 !important;
+}
+/* ===================================== */
+/* QUILL DROPDOWN DARK FIX */
+/* ===================================== */
+
+.dark .ql-picker-options {
+  background: #1f2937 !important;
+
+  border: 1px solid #374151 !important;
+}
+
+.dark .ql-picker-item {
+  color: #ffffff !important;
+}
+
+.dark .ql-picker-label {
+  color: #ffffff !important;
+}
+
+.dark .ql-picker-item:hover {
+  background: #374151 !important;
+}
+
+/* ITEMS SELECIONADOS */
+
+.dark .ql-picker-item.ql-selected {
+  color: #60a5fa !important;
+}
+
+.dark .ql-picker-label.ql-active {
+  color: #60a5fa !important;
+}
+
+/* ===================================== */
+/* QUILL ACTIVE BUTTONS */
+/* ===================================== */
+
+/* DARK */
+
+.dark .ql-toolbar button.ql-active,
+.dark .ql-toolbar .ql-picker-label.ql-active {
+  color: #3b82f6 !important;
+}
+
+.dark .ql-toolbar button.ql-active .ql-stroke,
+.dark .ql-toolbar .ql-picker-label.ql-active .ql-stroke {
+  stroke: #3b82f6 !important;
+}
+
+.dark .ql-toolbar button.ql-active .ql-fill,
+.dark .ql-toolbar .ql-picker-label.ql-active .ql-fill {
+  fill: #3b82f6 !important;
+}
+
+/* LIGHT */
+
+.light .ql-toolbar button.ql-active,
+.light .ql-toolbar .ql-picker-label.ql-active {
+  color: #2563eb !important;
+}
+
+.light .ql-toolbar button.ql-active .ql-stroke,
+.light .ql-toolbar .ql-picker-label.ql-active .ql-stroke {
+  stroke: #2563eb !important;
+}
+
+.light .ql-toolbar button.ql-active .ql-fill,
+.light .ql-toolbar .ql-picker-label.ql-active .ql-fill {
+  fill: #2563eb !important;
+}
