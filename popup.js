@@ -39,6 +39,78 @@ let state = {
 state.lastColor = state.lastColor || "#000000";
 state.lastBackground = state.lastBackground || "#ffff00";
 
+state.recentColors = state.recentColors || [];
+state.recentBackgrounds = state.recentBackgrounds || [];
+
+const OFFICE_COLORS = [
+  // Linha 1 — preto ao branco
+  "#000000",
+  "#1f1f1f",
+  "#3d3d3d",
+  "#5c5c5c",
+  "#7a7a7a",
+  "#999999",
+  "#b8b8b8",
+  "#d6d6d6",
+  "#f0f0f0",
+  "#ffffff",
+  // Linha 2 — cores vivas
+  "#ff0000",
+  "#ff4000",
+  "#ff8000",
+  "#ffbf00",
+  "#ffff00",
+  "#80ff00",
+  "#00ff00",
+  "#00ff80",
+  "#00ffff",
+  "#0080ff",
+  // Linha 3 — cores médias
+  "#8000ff",
+  "#ff00ff",
+  "#ff0080",
+  "#ff6666",
+  "#ffb366",
+  "#ffff66",
+  "#b3ff66",
+  "#66ffcc",
+  "#66b3ff",
+  "#0000ff",
+  // Linha 4 — tons pastel
+  "#f4cccc",
+  "#fce5cd",
+  "#fff2cc",
+  "#d9ead3",
+  "#d0e0e3",
+  "#cfe2f3",
+  "#d9d2e9",
+  "#ead1dc",
+  "#f4b8c1",
+  "#c9daf8",
+  // Linha 5 — tons médios
+  "#ea9999",
+  "#f9cb9c",
+  "#ffe599",
+  "#b6d7a8",
+  "#a2c4c9",
+  "#9fc5e8",
+  "#b4a7d6",
+  "#d5a6bd",
+  "#e06666",
+  "#6d9eeb",
+  // Linha 6 — tons escuros
+  "#cc0000",
+  "#e69138",
+  "#f1c232",
+  "#6aa84f",
+  "#45818e",
+  "#3d85c6",
+  "#674ea7",
+  "#a64d79",
+  "#85200c",
+  "#1c4587",
+];
+
 // =====================================
 // CUSTOM ICONS
 // =====================================
@@ -71,6 +143,18 @@ icons.lowercase = "a↓";
 
 icons.capitalize = "Aa";
 
+icons.clearAll = `
+  <svg viewBox="0 0 18 18">
+    <path class="ql-stroke" d="M3 3l12 12M3 15L15 3"/>
+  </svg>
+`;
+icons.copyAll = `
+  <svg viewBox="0 0 18 18">
+    <rect class="ql-stroke" x="3" y="5" width="9" height="11" rx="1"/>
+    <path class="ql-stroke" d="M6 5V4a1 1 0 0 1 1-1h7a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1h-1"/>
+  </svg>
+`;
+
 // =====================================
 // QUILL
 // =====================================
@@ -94,154 +178,7 @@ const quill = new window.Quill("#editor", {
         ["bold", "italic", "underline", "strike"],
         ["uppercase", "lowercase", "capitalize"],
 
-        [
-          {
-            color: [
-              false,
-
-              "#ffffff",
-              "#f9fafb",
-              "#f3f4f6",
-              "#e5e7eb",
-              "#d1d5db",
-
-              "#000000",
-              "#111827",
-              "#1f2937",
-              "#374151",
-              "#4b5563",
-              "#6b7280",
-              "#9ca3af",
-              "#d1d5db",
-              "#e5e7eb",
-              "#f9fafb",
-
-              "#fee2e2",
-              "#fecaca",
-              "#fca5a5",
-              "#ffedd5",
-              "#fed7aa",
-              "#fdba74",
-              "#fef9c3",
-              "#fef08a",
-              "#fde047",
-              "#dcfce7",
-              "#bbf7d0",
-              "#86efac",
-              "#cffafe",
-              "#a5f3fc",
-              "#67e8f9",
-              "#dbeafe",
-              "#bfdbfe",
-              "#93c5fd",
-              "#ede9fe",
-              "#ddd6fe",
-              "#c4b5fd",
-              "#fce7f3",
-              "#fbcfe8",
-              "#f9a8d4",
-
-              "#ef4444",
-              "#dc2626",
-              "#b91c1c",
-              "#f97316",
-              "#ea580c",
-              "#c2410c",
-              "#eab308",
-              "#ca8a04",
-              "#a16207",
-              "#22c55e",
-              "#16a34a",
-              "#15803d",
-              "#06b6d4",
-              "#0891b2",
-              "#0e7490",
-              "#3b82f6",
-              "#2563eb",
-              "#1d4ed8",
-              "#8b5cf6",
-              "#7c3aed",
-              "#6d28d9",
-              "#ec4899",
-              "#db2777",
-              "#be185d",
-            ],
-          },
-        ],
-        [
-          {
-            background: [
-              false,
-
-              "#ffffff",
-              "#f9fafb",
-              "#f3f4f6",
-              "#e5e7eb",
-              "#d1d5db",
-
-              "#000000",
-              "#111827",
-              "#1f2937",
-              "#374151",
-              "#4b5563",
-              "#6b7280",
-              "#9ca3af",
-              "#d1d5db",
-              "#e5e7eb",
-              "#f9fafb",
-
-              "#fee2e2",
-              "#fecaca",
-              "#fca5a5",
-              "#ffedd5",
-              "#fed7aa",
-              "#fdba74",
-              "#fef9c3",
-              "#fef08a",
-              "#fde047",
-              "#dcfce7",
-              "#bbf7d0",
-              "#86efac",
-              "#cffafe",
-              "#a5f3fc",
-              "#67e8f9",
-              "#dbeafe",
-              "#bfdbfe",
-              "#93c5fd",
-              "#ede9fe",
-              "#ddd6fe",
-              "#c4b5fd",
-              "#fce7f3",
-              "#fbcfe8",
-              "#f9a8d4",
-
-              "#ef4444",
-              "#dc2626",
-              "#b91c1c",
-              "#f97316",
-              "#ea580c",
-              "#c2410c",
-              "#eab308",
-              "#ca8a04",
-              "#a16207",
-              "#22c55e",
-              "#16a34a",
-              "#15803d",
-              "#06b6d4",
-              "#0891b2",
-              "#0e7490",
-              "#3b82f6",
-              "#2563eb",
-              "#1d4ed8",
-              "#8b5cf6",
-              "#7c3aed",
-              "#6d28d9",
-              "#ec4899",
-              "#db2777",
-              "#be185d",
-            ],
-          },
-        ],
+        ["color", "background"],
 
         [{ list: "ordered" }, { list: "bullet" }, { list: "check" }],
 
@@ -252,6 +189,8 @@ const quill = new window.Quill("#editor", {
         ["clean"],
 
         ["undo", "redo"],
+
+        ["clearAll", "copyAll"],
       ],
       handlers: {
         undo: () => {
@@ -311,10 +250,54 @@ const quill = new window.Quill("#editor", {
           updateColorUI();
           saveState();
         },
+
+        clearAll: function () {
+          const confirmed = confirm("Apagar todo o conteúdo desta aba?");
+          if (!confirmed) return;
+          quill.setContents([{ insert: "\n" }], "user");
+          saveCurrentTab();
+          saveState();
+        },
+
+        copyAll: function () {
+          const text = quill.getText();
+          navigator.clipboard.writeText(text).then(() => {
+            // feedback visual temporário no botão
+            const btn = document.querySelector(".ql-copyAll");
+            if (!btn) return;
+            btn.style.opacity = "0.4";
+            setTimeout(() => (btn.style.opacity = ""), 400);
+          });
+        },
       },
     },
   },
 });
+
+quill.root.setAttribute("spellcheck", "false");
+
+// REMOVE PICKERS ORIGINAIS DO QUILL
+const colorPicker = document.querySelector(".ql-color");
+const bgPicker = document.querySelector(".ql-background");
+
+if (colorPicker) {
+  colorPicker.innerHTML = `
+    <button class="color-apply-btn" id="apply-color-btn" title="Aplicar cor">
+      <span class="color-btn-letter">A</span>
+      <span class="color-btn-bar" id="color-bar"></span>
+    </button>
+    <button class="color-arrow-btn" id="open-color-picker" title="Escolher cor">▾</button>
+  `;
+}
+if (bgPicker) {
+  bgPicker.innerHTML = `
+    <button class="color-apply-btn" id="apply-bg-btn" title="Aplicar cor de fundo">
+      <span class="color-btn-letter">🖍</span>
+      <span class="color-btn-bar" id="bg-bar"></span>
+    </button>
+    <button class="color-arrow-btn" id="open-bg-picker" title="Escolher cor de fundo">▾</button>
+  `;
+}
 
 // =====================================
 // FIX QUILL TOOLBAR FOCUS
@@ -330,19 +313,6 @@ toolbar.addEventListener("mousedown", (e) => {
   if (!button) return;
 
   e.preventDefault();
-});
-
-// PICKERS
-document.querySelectorAll(".ql-picker-label").forEach((label) => {
-  label.addEventListener("mousedown", (e) => {
-    e.preventDefault();
-  });
-});
-
-document.querySelectorAll(".ql-picker-item").forEach((item) => {
-  item.addEventListener("mousedown", (e) => {
-    e.preventDefault();
-  });
 });
 
 // =====================================
@@ -381,143 +351,218 @@ document.querySelectorAll(".ql-toolbar button").forEach((btn) => {
 // =====================================
 
 function updateColorUI() {
-  const colorBtn = document.querySelector(
-    ".ql-color .ql-picker-label div div:first-child",
-  );
-
-  const bgBtn = document.querySelector(
-    ".ql-background .ql-picker-label div div:first-child",
-  );
-
-  if (colorBtn) {
-    colorBtn.style.borderBottom = `3px solid ${state.lastColor}`;
-  }
-
-  if (bgBtn) {
-    bgBtn.style.borderBottom = `3px solid ${state.lastBackground}`;
-  }
+  const colorBar = document.getElementById("color-bar");
+  const bgBar = document.getElementById("bg-bar");
+  if (colorBar) colorBar.style.background = state.lastColor;
+  if (bgBar) bgBar.style.background = state.lastBackground;
 }
 
 // =====================================
-// SPLIT BUTTON COLOR (WORD STYLE)
+// CUSTOM COLOR PICKER
 // =====================================
 
-function setupSplitColorButtons() {
-  createSplit(".ql-color", "color");
-  createSplit(".ql-background", "background");
+const colorPopup = document.getElementById("color-popup");
+
+const colorGrid = document.getElementById("color-grid");
+
+const recentColorsEl = document.getElementById("recent-colors");
+
+const hiddenColorPicker = document.getElementById("hidden-color-picker");
+
+let currentColorMode = "color";
+
+// =====================================
+// CREATE GRID
+// =====================================
+
+function renderColorGrid() {
+  colorGrid.innerHTML = "";
+
+  OFFICE_COLORS.forEach((color) => {
+    const item = document.createElement("div");
+
+    item.className = "color-item";
+
+    item.style.background = color;
+
+    item.addEventListener("click", () => {
+      applyColor(color);
+    });
+
+    colorGrid.appendChild(item);
+  });
 }
 
-// fecha dropdown ao clicar fora
-document.addEventListener("mousedown", (e) => {
-  if (!e.target.closest(".ql-picker")) {
-    document
-      .querySelectorAll(".ql-picker")
-      .forEach((p) => p.classList.remove("ql-expanded"));
+// =====================================
+// RECENTS
+// =====================================
+
+function renderRecentColors() {
+  recentColorsEl.innerHTML = "";
+  const recent =
+    currentColorMode === "color" ? state.recentColors : state.recentBackgrounds;
+
+  if (recent.length === 0) {
+    // ADICIONE ISSO:
+    recentColorsEl.innerHTML =
+      '<span style="font-size:11px;opacity:0.45;">Nenhuma cor recente</span>';
+    return;
   }
-});
 
-function createSplit(selector, format) {
-  const picker = document.querySelector(selector);
-  if (!picker) return;
+  recent.slice(0, 10).forEach((color) => {
+    const item = document.createElement("div");
+    item.className = "color-item";
+    item.style.background = color;
+    item.addEventListener("click", () => applyColor(color));
+    recentColorsEl.appendChild(item);
+  });
+}
 
-  const label = picker.querySelector(".ql-picker-label");
+// =====================================
+// APPLY
+// =====================================
 
-  // 🔥 remove comportamento padrão do Quill
-  label.setAttribute("data-value", "");
-  label.innerHTML = "";
+function applyColor(color) {
+  if (savedSelection) quill.setSelection(savedSelection);
+  if (currentColorMode === "color") {
+    quill.format("color", color, "user");
 
-  // wrapper
-  const wrapper = document.createElement("div");
-  wrapper.style.display = "flex";
-  wrapper.style.alignItems = "center";
-  wrapper.style.width = "100%";
+    state.lastColor = color;
 
-  // =====================
-  // ESQUERDA (APLICAR COR)
-  // =====================
-  const action = document.createElement("div");
-  action.style.flex = "1";
-  action.style.cursor = "pointer";
-  action.style.padding = "0 6px";
-  action.style.display = "flex";
-  action.style.alignItems = "center";
-  action.style.justifyContent = "center";
+    if (!state.recentColors.includes(color)) {
+      state.recentColors.unshift(color);
+    }
+  } else {
+    quill.format("background", color, "user");
 
-  action.innerHTML = "A";
+    state.lastBackground = color;
 
-  action.addEventListener("mousedown", (e) => {
+    if (!state.recentBackgrounds.includes(color)) {
+      state.recentBackgrounds.unshift(color);
+    }
+  }
+
+  updateColorUI();
+
+  saveState();
+
+  colorPopup.classList.add("hidden");
+}
+
+// =====================================
+// OPEN POPUP
+// =====================================
+
+let savedSelection = null;
+
+function setupCustomColorPickers() {
+  // ── BOTÃO ESQUERDO (aplicar) ──────────────────────────────
+  // Usa mousedown + stopPropagation para evitar que o Quill
+  // receba o evento e resete a cor depois do nosso handler
+  document
+    .getElementById("apply-color-btn")
+    .addEventListener("mousedown", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const sel = quill.getSelection();
+      if (sel !== null) {
+        quill.format("color", state.lastColor, "user");
+      }
+    });
+  document.getElementById("apply-color-btn").addEventListener("click", (e) => {
+    e.preventDefault();
+    e.stopPropagation(); // impede o Quill de agir no click também
+  });
+
+  document.getElementById("apply-bg-btn").addEventListener("mousedown", (e) => {
     e.preventDefault();
     e.stopPropagation();
-
-    if (format === "color") {
-      quill.format("color", state.lastColor, "user");
-    } else {
+    const sel = quill.getSelection();
+    if (sel !== null) {
       quill.format("background", state.lastBackground, "user");
     }
   });
-
-  // =====================
-  // DIREITA (SETA)
-  // =====================
-  const arrow = document.createElement("div");
-  arrow.style.width = "18px";
-  arrow.style.cursor = "pointer";
-  arrow.style.textAlign = "center";
-  arrow.innerHTML = "▼";
-
-  arrow.addEventListener("mousedown", (e) => {
+  document.getElementById("apply-bg-btn").addEventListener("click", (e) => {
     e.preventDefault();
     e.stopPropagation();
-
-    const isOpen = picker.classList.contains("ql-expanded");
-
-    // fecha todos
-    document
-      .querySelectorAll(".ql-picker")
-      .forEach((p) => p.classList.remove("ql-expanded"));
-
-    // abre só esse
-    if (!isOpen) {
-      picker.classList.add("ql-expanded");
-    }
   });
 
-  wrapper.appendChild(action);
-  wrapper.appendChild(arrow);
-  label.appendChild(wrapper);
+  // ── BOTÃO DIREITO (seta / dropdown) ──────────────────────
+  function openPopup(e, mode) {
+    e.preventDefault();
+    e.stopPropagation();
+    savedSelection = quill.getSelection();
+    currentColorMode = mode;
+    renderColorGrid();
+    renderRecentColors();
+    const rect = e.currentTarget.getBoundingClientRect();
+    colorPopup.style.left = rect.left + "px";
+    colorPopup.style.top = rect.bottom + 8 + "px";
+    colorPopup.classList.remove("hidden");
+  }
 
-  // 🔥 impedir Quill de abrir no click padrão
-  label.addEventListener("mousedown", (e) => {
+  document
+    .getElementById("open-color-picker")
+    .addEventListener("mousedown", (e) => openPopup(e, "color"));
+  document
+    .getElementById("open-color-picker")
+    .addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+    });
+
+  document
+    .getElementById("open-bg-picker")
+    .addEventListener("mousedown", (e) => openPopup(e, "background"));
+  document.getElementById("open-bg-picker").addEventListener("click", (e) => {
     e.preventDefault();
     e.stopPropagation();
   });
 }
+
+// =====================================
+// CLEAR
+// =====================================
+
+document.querySelector(".color-clear").addEventListener("click", () => {
+  if (currentColorMode === "color") {
+    quill.format("color", false, "user");
+  } else {
+    quill.format("background", false, "user");
+  }
+
+  colorPopup.classList.add("hidden");
+});
+
+// =====================================
+// CUSTOM COLOR
+// =====================================
+
+document.getElementById("custom-color-btn").addEventListener("click", () => {
+  hiddenColorPicker.click();
+});
+
+hiddenColorPicker.addEventListener("input", (e) => {
+  applyColor(e.target.value);
+});
+
+// =====================================
+// CLOSE OUTSIDE
+// =====================================
+
+document.addEventListener("mousedown", (e) => {
+  if (
+    !e.target.closest(".color-popup") &&
+    !e.target.closest(".ql-color") &&
+    !e.target.closest(".ql-background")
+  ) {
+    colorPopup.classList.add("hidden");
+  }
+});
 
 // =====================================
 // SHORTCUTS
 // =====================================
-
-document.addEventListener("keydown", (e) => {
-  // CTRL + Z
-
-  if ((e.ctrlKey || e.metaKey) && !e.shiftKey && e.key.toLowerCase() === "z") {
-    e.preventDefault();
-
-    quill.history.undo();
-  }
-
-  // CTRL + Y
-  // CTRL + SHIFT + Z
-
-  if (
-    ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "y") ||
-    ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === "z")
-  ) {
-    e.preventDefault();
-
-    quill.history.redo();
-  }
-});
 
 // =====================================
 // TEXT TRANSFORM
@@ -561,6 +606,10 @@ function transformText(type) {
   quill.setSelection(range.index, transformed.length);
 }
 
+// =====================================
+// SPELL CHECK CONTEXT MENU
+// =====================================
+
 // ==========================
 // LOAD
 // ==========================
@@ -572,14 +621,16 @@ async function loadState() {
     if (saved) {
       state = {
         theme: saved.theme || "dark",
-
         currentTab: typeof saved.currentTab === "number" ? saved.currentTab : 0,
-
         tabs: Array.isArray(saved.tabs) ? saved.tabs : [],
-
         lastColor: saved.lastColor || "#000000",
-
         lastBackground: saved.lastBackground || "#ffff00",
+        recentColors: Array.isArray(saved.recentColors)
+          ? saved.recentColors
+          : [],
+        recentBackgrounds: Array.isArray(saved.recentBackgrounds)
+          ? saved.recentBackgrounds
+          : [],
       };
     }
   } catch (err) {
@@ -976,7 +1027,7 @@ exportPdfBtn.onclick = () => {
 
     if (type === "checked" || type === "unchecked") {
       prefix.innerText = isChecked ? "✔" : "☐";
-      prefix.style.color = isChecked ? "green" : "#555";
+      prefix.style.color = isChecked ? "green" : "#000000";
       prefix.style.fontWeight = "bold";
     }
 
@@ -1068,7 +1119,7 @@ importFile.addEventListener("change", async (e) => {
 
     // IMPORTA COMO TEXTO
 
-    quill.setText(text);
+    quill.setText(text, "user");
 
     // SALVA NA ABA ATUAL
 
@@ -1301,13 +1352,44 @@ async function updateAppTitle() {
 
 updateAppTitle();
 
-// ==========================
-// INIT
-// ==========================
+// =====================================
+// UPDATE UI
+// =====================================
+const updateOverlay = document.getElementById("update-overlay");
+const updateTitle = document.getElementById("update-title");
+const updateSubtitle = document.getElementById("update-subtitle");
+const updatePercent = document.getElementById("update-percent");
+const updateProgressBar = document.getElementById("update-progress-bar");
+const updateActions = document.getElementById("update-actions");
+const updateIcon = document.getElementById("update-icon");
 
-loadState();
-updateColorUI();
-setupSplitColorButtons();
+window.electronAPI.onUpdateAvailable((version) => {
+  updateTitle.textContent = `Nova versão v${version} disponível`;
+  updateSubtitle.textContent = "Baixando atualização...";
+  updateOverlay.classList.remove("hidden");
+});
+
+window.electronAPI.onUpdateProgress((percent) => {
+  updateProgressBar.style.width = percent + "%";
+  updatePercent.textContent = percent + "%";
+});
+
+window.electronAPI.onUpdateDownloaded(() => {
+  updateIcon.textContent = "✅";
+  updateTitle.textContent = "Atualização pronta!";
+  updateSubtitle.textContent = "";
+  updatePercent.textContent = "";
+  document.getElementById("update-progress-wrap").classList.add("hidden");
+  updateActions.classList.remove("hidden");
+});
+
+document.getElementById("update-restart-btn").addEventListener("click", () => {
+  window.electronAPI.restartApp();
+});
+
+document.getElementById("update-later-btn").addEventListener("click", () => {
+  updateOverlay.classList.add("hidden");
+});
 
 // =====================================
 // GLOBAL SHORTCUT -> NEW TAB
@@ -1316,3 +1398,11 @@ setupSplitColorButtons();
 window.electronAPI.onNewTabShortcut(() => {
   addTabBtn.click();
 });
+
+// ==========================
+// INIT
+// ==========================
+
+loadState();
+updateColorUI();
+setupCustomColorPickers();

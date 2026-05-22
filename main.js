@@ -1,38 +1,28 @@
-const { app, BrowserWindow, globalShortcut, ipcMain } = require("electron");
+const { app, BrowserWindow, globalShortcut, ipcMain } = require("electron"); // Menu e MenuItem removidos
 
 const path = require("path");
+// https e fs removidos — não são mais usados
 
 const Store = require("electron-store");
-
 const { autoUpdater } = require("electron-updater");
-
 const store = new Store();
 
 // =====================================
 // CREATE WINDOW
 // =====================================
-
 function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1100,
     height: 750,
-
     frame: true,
-
     minWidth: 700,
     minHeight: 500,
-
     backgroundColor: "#111827",
-
     autoHideMenuBar: true,
-
     title: `Floating Notes v${app.getVersion()}`,
-
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
-
       contextIsolation: true,
-
       nodeIntegration: false,
     },
   });
@@ -50,60 +40,42 @@ function createWindow() {
 // =====================================
 // APP READY
 // =====================================
-
 app.whenReady().then(() => {
   createWindow();
 
   // =====================================
   // GLOBAL SHORTCUTS
   // =====================================
-
-  // OPEN APP
   globalShortcut.register("CommandOrControl+Alt+N", () => {
     if (!mainWindow) {
       createWindow();
       return;
     }
-
-    if (mainWindow.isMinimized()) {
-      mainWindow.restore();
-    }
-
+    if (mainWindow.isMinimized()) mainWindow.restore();
     mainWindow.show();
-
     mainWindow.focus();
   });
 
-  // NEW TAB
   globalShortcut.register("CommandOrControl+Alt+T", () => {
-    if (mainWindow) {
-      mainWindow.webContents.send("shortcut-new-tab");
-    }
+    if (mainWindow) mainWindow.webContents.send("shortcut-new-tab");
   });
 
-  // ALWAYS ON TOP
   globalShortcut.register("CommandOrControl+Alt+P", () => {
     if (!mainWindow) return;
-
     const current = mainWindow.isAlwaysOnTop();
-
     mainWindow.setAlwaysOnTop(!current);
   });
 
   // =====================================
   // AUTO UPDATE
   // =====================================
-
   autoUpdater.autoDownload = true;
-
   autoUpdater.autoInstallOnAppQuit = true;
-
-  autoUpdater.on("checking-for-update", () => {
-    console.log("Checking for update...");
-  });
 
   autoUpdater.on("update-available", (info) => {
     console.log("Update available:", info.version);
+    if (mainWindow)
+      mainWindow.webContents.send("update-available", info.version);
   });
 
   autoUpdater.on("update-not-available", () => {
@@ -111,20 +83,24 @@ app.whenReady().then(() => {
   });
 
   autoUpdater.on("download-progress", (progress) => {
-    console.log(`Download: ${Math.round(progress.percent)}%`);
+    const percent = Math.round(progress.percent);
+    console.log(`Download: ${percent}%`);
+    if (mainWindow) mainWindow.webContents.send("update-progress", percent);
   });
 
   autoUpdater.on("update-downloaded", () => {
     console.log("Update downloaded.");
-
-    autoUpdater.quitAndInstall();
+    if (mainWindow) mainWindow.webContents.send("update-downloaded");
   });
 
   autoUpdater.on("error", (err) => {
     console.error("Updater error:", err == null ? "unknown" : err.stack || err);
   });
 
-  // CHECK
+  // RESTART quando renderer pedir
+  ipcMain.on("restart-app", () => {
+    autoUpdater.quitAndInstall();
+  });
 
   setTimeout(() => {
     autoUpdater.checkForUpdatesAndNotify();
@@ -134,69 +110,38 @@ app.whenReady().then(() => {
 // =====================================
 // STORE IPC
 // =====================================
-
-// LOAD NOTES
-ipcMain.handle("load-notes", () => {
-  return store.get("notes");
-});
-
-// SAVE NOTES
+ipcMain.handle("load-notes", () => store.get("notes"));
 ipcMain.handle("save-notes", (event, notes) => {
   store.set("notes", notes);
-
   return true;
 });
 
 // =====================================
 // MACOS
 // =====================================
-
 app.on("activate", () => {
-  if (BrowserWindow.getAllWindows().length === 0) {
-    createWindow();
-  }
+  if (BrowserWindow.getAllWindows().length === 0) createWindow();
 });
-
-// =====================================
-// CLOSE ALL WINDOWS
-// =====================================
 
 app.on("window-all-closed", () => {
-  if (process.platform !== "darwin") {
-    app.quit();
-  }
+  if (process.platform !== "darwin") app.quit();
 });
 
 // =====================================
-// STORE SAVE
+// STORE SAVE / LOAD
 // =====================================
-
 ipcMain.handle("save-data", async (_, data) => {
   store.set("floatingNotesData", data);
-
   return true;
 });
-
-// =====================================
-// STORE LOAD
-// =====================================
-
-ipcMain.handle("load-data", async () => {
-  return store.get("floatingNotesData");
-});
+ipcMain.handle("load-data", async () => store.get("floatingNotesData"));
 
 // =====================================
 // CLEAN SHORTCUTS
 // =====================================
-
-app.on("will-quit", () => {
-  globalShortcut.unregisterAll();
-});
+app.on("will-quit", () => globalShortcut.unregisterAll());
 
 // =====================================
 // APP VERSION
 // =====================================
-
-ipcMain.handle("get-version", () => {
-  return app.getVersion();
-});
+ipcMain.handle("get-version", () => app.getVersion());

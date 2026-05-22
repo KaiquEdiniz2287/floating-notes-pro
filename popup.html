@@ -23,13 +23,13 @@
         <div id="actions">
           <input type="text" id="search" placeholder="Pesquisar..." />
 
-          <button id="theme-btn" class="theme-toggle" title="Tema">
-            <span class="theme-icon">🌙</span>
-          </button>
-
           <button id="export-btn" title="Baixar nota">▼</button>
 
           <button id="import-btn" title="Carregar nota">▲</button>
+
+          <button id="theme-btn" class="theme-toggle" title="Tema">
+            <span class="theme-icon">🌙</span>
+          </button>
         </div>
       </div>
 
@@ -70,6 +70,52 @@
         <button id="export-txt">Baixar como TXT</button>
 
         <button id="export-pdf">Baixar como PDF</button>
+      </div>
+    </div>
+
+    <!-- COLOR POPUP -->
+
+    <div id="color-popup" class="color-popup hidden">
+      <div class="color-section">
+        <button class="color-clear" data-action="clear">
+          Sem preenchimento
+        </button>
+      </div>
+
+      <div class="color-section-title">Padrão</div>
+
+      <div class="color-grid" id="color-grid"></div>
+
+      <div class="color-section-title">Recentes</div>
+
+      <div class="recent-colors" id="recent-colors"></div>
+
+      <button id="custom-color-btn" class="custom-color-btn">
+        🎨 Cor personalizada...
+      </button>
+
+      <input type="color" id="hidden-color-picker" hidden />
+    </div>
+
+    <!-- UPDATE OVERLAY -->
+    <div id="update-overlay" class="update-overlay hidden">
+      <div class="update-box">
+        <div id="update-icon">⬇️</div>
+        <div id="update-title">Nova versão disponível</div>
+        <div id="update-subtitle">Baixando atualização...</div>
+        <div class="update-progress-wrap" id="update-progress-wrap">
+          <div class="update-progress-bar" id="update-progress-bar"></div>
+        </div>
+        <div id="update-percent">0%</div>
+        <div id="update-actions" class="hidden">
+          <p id="update-ready-text">
+            Atualização pronta! Deseja reiniciar agora?
+          </p>
+          <div class="update-buttons">
+            <button id="update-restart-btn">Reiniciar agora</button>
+            <button id="update-later-btn">Mais tarde</button>
+          </div>
+        </div>
       </div>
     </div>
 

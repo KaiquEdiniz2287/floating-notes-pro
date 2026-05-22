@@ -1,6 +1,6 @@
 {
   "name": "floating-notes-pro",
-  "version": "1.0.7",
+  "version": "1.0.11",
   "description": "Floating Notes Desktop",
   "author": "Kaio Henrique",
   "main": "main.js",
@@ -31,7 +31,10 @@
     },
     "nsis": {
       "oneClick": false,
-      "allowToChangeInstallationDirectory": true
+      "allowToChangeInstallationDirectory": false,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Floating Notes Pro"
     },
     "forceCodeSigning": false
   },
@@ -40,7 +43,9 @@
     "electron-builder": "^26.8.1"
   },
   "dependencies": {
+    "dictionary-pt-br": "^2.0.1",
     "electron-store": "^8.2.0",
-    "electron-updater": "^6.8.3"
+    "electron-updater": "^6.8.3",
+    "nspell": "^2.1.5"
   }
 }
