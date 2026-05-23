@@ -305,6 +305,54 @@ if (bgPicker) {
 
 const toolbar = document.querySelector(".ql-toolbar");
 
+// elementos que NÃO devem roubar foco do editor
+const keepEditorFocusSelectors = [
+  "button",
+  ".tab",
+  ".close-tab",
+  "#topbar",
+  "#actions",
+  "#tabs-wrapper",
+  ".statusbar",
+  ".color-item",
+];
+
+// impede perda de cursor
+document.addEventListener("mousedown", (e) => {
+  // se clicou em input REAL → deixa focar normalmente
+  if (
+    e.target.closest("input") ||
+    e.target.closest("textarea") ||
+    e.target.closest(".tab-title[contenteditable='true']") ||
+    e.target.closest(".replace-popup") ||
+    e.target.closest(".export-popup")
+  ) {
+    return;
+  }
+
+  // elementos decorativos/UI
+  const shouldKeepFocus = keepEditorFocusSelectors.some((selector) =>
+    e.target.closest(selector),
+  );
+
+  if (!shouldKeepFocus) return;
+
+  // salva posição atual
+  const range = quill.getSelection();
+
+  // impede blur do editor
+  e.preventDefault();
+
+  // restaura cursor imediatamente
+  requestAnimationFrame(() => {
+    quill.focus();
+
+    if (range) {
+      quill.setSelection(range, "silent");
+    }
+  });
+});
+
 // impede toolbar de roubar foco do editor
 toolbar.addEventListener("mousedown", (e) => {
   const button = e.target.closest("button");
@@ -332,7 +380,7 @@ const tooltips = {
   "code-block": "Bloco de código",
   clean: "Limpar formatação",
   undo: "Desfazer (Ctrl+Z)",
-  redo: "Refazer (Ctrl+Y)",
+  redo: "Refazer (Ctrl+Shift+Z)",
   uppercase: "Transformar em MAIÚSCULO",
   lowercase: "Transformar em minúsculo",
   capitalize: "Primeira letra maiúscula",
@@ -651,6 +699,8 @@ async function loadState() {
         content: {
           ops: [],
         },
+
+        cursor: 0,
       },
     ];
   }
@@ -661,6 +711,8 @@ async function loadState() {
     title: tab.title || "Sem título",
 
     content: tab.content || { ops: [] },
+
+    cursor: typeof tab.cursor === "number" ? tab.cursor : 0,
   }));
 
   // GARANTE INDEX
@@ -677,6 +729,8 @@ async function loadState() {
 
   loadCurrentTab();
 
+  quill.focus();
+
   updateColorUI();
 }
 
@@ -691,7 +745,19 @@ async function saveState() {
     console.error(err);
   }
 }
+// =====================================
+// SAVE CURSOR POSITION
+// =====================================
 
+quill.on("selection-change", (range) => {
+  if (!range) return;
+
+  const currentTab = state.tabs[state.currentTab];
+
+  if (!currentTab) return;
+
+  currentTab.cursor = range.index;
+});
 // ==========================
 // SAVE CURRENT TAB
 // ==========================
@@ -712,6 +778,20 @@ function loadCurrentTab() {
   if (!tab) return;
 
   quill.setContents(tab.content || { ops: [] });
+
+  const cursorPos = typeof tab.cursor === "number" ? tab.cursor : 0;
+
+  // espera o Quill terminar de renderizar COMPLETAMENTE
+  setTimeout(() => {
+    const max = Math.max(0, quill.getLength() - 1);
+
+    const finalPos = Math.min(cursorPos, max);
+
+    quill.setSelection(finalPos, 0, "silent");
+
+    quill.focus();
+    updateStatusBar();
+  }, 0);
 }
 
 // ==========================
@@ -790,6 +870,7 @@ function renderTabs() {
       renderTabs();
 
       loadCurrentTab();
+      quill.focus();
 
       await saveState();
     });
@@ -808,6 +889,13 @@ function renderTabs() {
       clearTimeout(clickTimer);
 
       clickTimer = setTimeout(async () => {
+        // salva cursor da aba atual
+        const range = quill.getSelection();
+
+        if (range && state.tabs[state.currentTab]) {
+          state.tabs[state.currentTab].cursor = range.index;
+        }
+
         saveCurrentTab();
 
         state.currentTab = index;
@@ -815,6 +903,7 @@ function renderTabs() {
         renderTabs();
 
         loadCurrentTab();
+        quill.focus();
 
         await saveState();
       }, 10);
@@ -942,6 +1031,8 @@ addTabBtn.addEventListener("click", async () => {
     content: {
       ops: [],
     },
+
+    cursor: 0,
   });
 
   state.currentTab = state.tabs.length - 1;
@@ -949,6 +1040,7 @@ addTabBtn.addEventListener("click", async () => {
   renderTabs();
 
   loadCurrentTab();
+  quill.focus();
 
   await saveState();
 });
@@ -1193,6 +1285,7 @@ importFile.addEventListener("change", async (e) => {
     renderTabs();
 
     loadCurrentTab();
+    quill.focus();
 
     await saveState();
 
@@ -1206,10 +1299,18 @@ importFile.addEventListener("change", async (e) => {
 // ==========================
 // BEFORE CLOSE
 // ==========================
-
 window.addEventListener("beforeunload", async () => {
+  // salva conteúdo atual
   saveCurrentTab();
 
+  // pega posição REAL do cursor no momento exato do fechamento
+  const range = quill.getSelection();
+
+  if (range && state.tabs[state.currentTab]) {
+    state.tabs[state.currentTab].cursor = range.index;
+  }
+
+  // força persistência final
   await saveState();
 });
 
@@ -1261,7 +1362,7 @@ const replacePopup = document.getElementById("replace-popup");
 const findInput = document.getElementById("find-input");
 const replaceInput = document.getElementById("replace-input");
 const caseSensitive = document.getElementById("case-sensitive");
-
+const replaceBtn = document.getElementById("replace-btn");
 const replaceAllBtn = document.getElementById("replace-all");
 findInput.addEventListener("input", () => {
   lastFindIndex = 0;
@@ -1270,13 +1371,23 @@ const closeReplace = document.getElementById("close-replace");
 
 // ABRIR (CTRL + H)
 
+function openReplacePopup() {
+  replacePopup.classList.remove("hidden");
+
+  findInput.focus();
+}
+
+// botão
+replaceBtn.addEventListener("click", () => {
+  openReplacePopup();
+});
+
+// atalho
 document.addEventListener("keydown", (e) => {
   if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "h") {
     e.preventDefault();
 
-    replacePopup.classList.remove("hidden");
-
-    findInput.focus();
+    openReplacePopup();
   }
 });
 
@@ -1661,6 +1772,59 @@ quill.on("text-change", () => {
   updateStatusBar();
 });
 
+// =====================================
+// PERSISTENT EDITOR FOCUS
+// =====================================
+/*
+let lastRange = null;
+
+// salva última posição válida
+quill.on("selection-change", (range) => {
+  if (range) {
+    lastRange = range;
+  }
+});
+
+// elementos que PODEM roubar foco
+function isAllowedFocusTarget(el) {
+  if (!el) return false;
+
+  return (
+    el.closest(".tab-title") ||
+    el.closest("input") ||
+    el.closest("textarea") ||
+    el.closest(".ql-picker-options") ||
+    el.closest(".color-popup") ||
+    el.closest(".replace-popup") ||
+    el.closest(".export-popup")
+  );
+}
+
+// restaura foco automaticamente
+document.addEventListener("mousedown", (e) => {
+  // editor mantém foco
+  if (isAllowedFocusTarget(e.target)) {
+    return;
+  }
+
+  // espera click terminar
+  requestAnimationFrame(() => {
+    // se já focou algo válido
+    const active = document.activeElement;
+
+    if (isAllowedFocusTarget(active)) {
+      return;
+    }
+
+    // restaura cursor
+    quill.focus();
+
+    if (lastRange) {
+      quill.setSelection(lastRange, "silent");
+    }
+  });
+});
+*/
 // =====================================
 // GLOBAL SHORTCUT -> NEW TAB
 // =====================================

@@ -3,11 +3,8 @@
 <html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
-
     <title>Notas Independente</title>
-
     <link rel="stylesheet" href="popup.css" />
-
     <link rel="stylesheet" href="quill/quill.snow.css" />
   </head>
 
@@ -16,17 +13,14 @@
       <div id="topbar">
         <div id="tabs-wrapper">
           <div id="tabs"></div>
-
           <button id="add-tab" title="Adicionar aba">+</button>
         </div>
 
         <div id="actions">
           <input type="text" id="search" placeholder="Pesquisar..." />
-
           <button id="export-btn" title="Baixar nota">▼</button>
-
           <button id="import-btn" title="Carregar nota">▲</button>
-
+          <button id="replace-btn" title="Localizar e substituir">🔍</button>
           <button id="theme-btn" class="theme-toggle" title="Tema">
             <span class="theme-icon">🌙</span>
           </button>
@@ -39,7 +33,6 @@
         <div class="status-left">
           <span id="cursor-pos">Ln 1, Col 1</span>
         </div>
-
         <div class="status-right">
           <span id="char-count">0 caracteres</span>
           <span id="word-count">0 palavras</span>
@@ -55,11 +48,8 @@
           Substituir
           <button id="close-replace">✕</button>
         </div>
-
         <input id="find-input" placeholder="Localizar..." />
-
         <input id="replace-input" placeholder="Substituir por..." />
-
         <label class="replace-option">
           <input type="checkbox" id="case-sensitive" />
           Diferenciar maiúsculas/minúsculas
@@ -80,9 +70,7 @@
           Exportar nota
           <button id="close-export">✕</button>
         </div>
-
         <button id="export-txt">Baixar como TXT</button>
-
         <button id="export-pdf">Baixar como PDF</button>
       </div>
     </div>
@@ -97,13 +85,9 @@
       </div>
 
       <div class="color-section-title">Padrão</div>
-
       <div class="color-grid" id="color-grid"></div>
-
       <div class="color-section-title">Recentes</div>
-
       <div class="recent-colors" id="recent-colors"></div>
-
       <button id="custom-color-btn" class="custom-color-btn">
         🎨 Cor personalizada...
       </button>
@@ -134,13 +118,9 @@
     </div>
 
     <input type="file" id="import-file" hidden />
-
     <script src="quill/quill.js"></script>
-
     <script src="sortable/Sortable.min.js"></script>
-
     <script src="html2pdf.bundle.min.js"></script>
-
     <script src="popup.js"></script>
   </body>
 </html>
