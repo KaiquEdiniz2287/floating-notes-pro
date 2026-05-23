@@ -1,13 +1,13 @@
 {
   "name": "floating-notes-pro",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "Floating Notes Desktop",
   "author": "Kaio H. Diniz",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
     "build": "electron-builder",
-    "kill": "taskkill /F /IM electron.exe",
+    "kill": "taskkill /F /IM electron.exe || exit /B 0",
     "release": "npm run kill && electron-builder --publish always"
   },
   "build": {

@@ -309,7 +309,6 @@ const toolbar = document.querySelector(".ql-toolbar");
 const keepEditorFocusSelectors = [
   "button",
   ".tab",
-  ".close-tab",
   "#topbar",
   "#actions",
   "#tabs-wrapper",
@@ -781,7 +780,6 @@ function loadCurrentTab() {
 
   const cursorPos = typeof tab.cursor === "number" ? tab.cursor : 0;
 
-  // espera o Quill terminar de renderizar COMPLETAMENTE
   setTimeout(() => {
     const max = Math.max(0, quill.getLength() - 1);
 
@@ -790,7 +788,12 @@ function loadCurrentTab() {
     quill.setSelection(finalPos, 0, "silent");
 
     quill.focus();
-    updateStatusBar();
+
+    // 🔥 FORÇA STATUSBAR CORRETA
+    updateStatusBar({
+      index: finalPos,
+      length: 0,
+    });
   }, 0);
 }
 
@@ -841,19 +844,30 @@ function renderTabs() {
     close.addEventListener("click", async (e) => {
       e.stopPropagation();
 
+      document.activeElement?.blur();
+      quill.blur();
+
       if (state.tabs.length === 1) {
         return;
       }
 
       // CONFIRMAÇÃO
 
-      const confirmed = confirm(
+      const confirmed = await customConfirm(
         `Deseja realmente fechar a aba "${tabData.title}"?`,
       );
 
-      if (!confirmed) {
-        return;
-      }
+      if (!confirmed) return;
+
+      setTimeout(() => {
+        quill.focus();
+
+        const current = state.tabs[state.currentTab];
+
+        if (current && typeof current.cursor === "number") {
+          quill.setSelection(current.cursor, 0, "silent");
+        }
+      }, 0);
 
       // REMOVE
 
@@ -873,6 +887,21 @@ function renderTabs() {
       quill.focus();
 
       await saveState();
+
+      requestAnimationFrame(() => {
+        quill.focus();
+
+        const current = state.tabs[state.currentTab];
+
+        if (!current) return;
+
+        const pos =
+          typeof current.cursor === "number"
+            ? current.cursor
+            : quill.getLength() - 1;
+
+        quill.setSelection(pos, 0, "silent");
+      });
     });
 
     // =====================================
@@ -1734,9 +1763,7 @@ const cursorPosEl = document.getElementById("cursor-pos");
 const charCountEl = document.getElementById("char-count");
 const wordCountEl = document.getElementById("word-count");
 
-function updateStatusBar() {
-  const range = quill.getSelection();
-
+function updateStatusBar(range = quill.getSelection()) {
   // POSIÇÃO CURSOR
   if (range) {
     const textBefore = quill.getText(0, range.index);
@@ -1763,8 +1790,8 @@ function updateStatusBar() {
 }
 
 // CURSOR
-quill.on("selection-change", () => {
-  updateStatusBar();
+quill.on("selection-change", (range) => {
+  updateStatusBar(range);
 });
 
 // TEXTO
@@ -1773,58 +1800,67 @@ quill.on("text-change", () => {
 });
 
 // =====================================
-// PERSISTENT EDITOR FOCUS
+// CONFIRMAÇÃO DE FECHAMENTO DA ABA
 // =====================================
-/*
-let lastRange = null;
+const confirmPopup = document.getElementById("confirm-popup");
+const confirmMessage = document.getElementById("confirm-message");
+const confirmOk = document.getElementById("confirm-ok");
+const confirmCancel = document.getElementById("confirm-cancel");
 
-// salva última posição válida
-quill.on("selection-change", (range) => {
-  if (range) {
-    lastRange = range;
-  }
-});
+function customConfirm(message) {
+  return new Promise((resolve) => {
+    confirmMessage.textContent = message;
 
-// elementos que PODEM roubar foco
-function isAllowedFocusTarget(el) {
-  if (!el) return false;
+    confirmPopup.classList.remove("hidden");
 
-  return (
-    el.closest(".tab-title") ||
-    el.closest("input") ||
-    el.closest("textarea") ||
-    el.closest(".ql-picker-options") ||
-    el.closest(".color-popup") ||
-    el.closest(".replace-popup") ||
-    el.closest(".export-popup")
-  );
+    function handleKey(e) {
+      // ENTER ou ESPAÇO = confirmar
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+
+        cleanup();
+
+        resolve(true);
+      }
+
+      // ESC = cancelar
+      if (e.key === "Escape") {
+        e.preventDefault();
+
+        cleanup();
+
+        resolve(false);
+      }
+    }
+
+    document.addEventListener("keydown", handleKey);
+
+    const cleanup = () => {
+      confirmPopup.classList.add("hidden");
+
+      confirmOk.onclick = null;
+      confirmCancel.onclick = null;
+
+      document.removeEventListener("keydown", handleKey);
+
+      // restaura foco editor
+      requestAnimationFrame(() => {
+        quill.focus();
+      });
+    };
+
+    confirmOk.onclick = () => {
+      cleanup();
+      resolve(true);
+    };
+
+    confirmCancel.onclick = () => {
+      cleanup();
+      resolve(false);
+    };
+  });
 }
 
-// restaura foco automaticamente
-document.addEventListener("mousedown", (e) => {
-  // editor mantém foco
-  if (isAllowedFocusTarget(e.target)) {
-    return;
-  }
-
-  // espera click terminar
-  requestAnimationFrame(() => {
-    // se já focou algo válido
-    const active = document.activeElement;
-
-    if (isAllowedFocusTarget(active)) {
-      return;
-    }
-
-    // restaura cursor
-    quill.focus();
-
-    if (lastRange) {
-      quill.setSelection(lastRange, "silent");
-    }
-  });
-});
-*/
 // =====================================
 // GLOBAL SHORTCUT -> NEW TAB
 // =====================================

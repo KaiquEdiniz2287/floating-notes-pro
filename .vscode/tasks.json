@@ -1,0 +1,20 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Iniciar App",
+      "type": "shell",
+      "command": "npm start",
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "Release Electron",
+      "type": "shell",
+      "command": "npm run release"
+    }
+  ]
+}
