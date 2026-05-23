@@ -74,6 +74,12 @@ body.light {
 
 .tab-title {
   outline: none;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  max-width: 140px;
 }
 
 .close-tab {
@@ -117,12 +123,32 @@ button {
   gap: 4px;
 }
 
+#export-btn {
+  padding: 6px 6px;
+
+  transition: transform 0.2s ease;
+}
+
+#import-btn {
+  padding: 6px 6px;
+
+  transition: transform 0.2s ease;
+}
+
+#export-btn:hover {
+  transform: scale(1.08);
+}
+
+#import-btn:hover {
+  transform: scale(1.08);
+}
+
 #search {
   padding: 8px 10px;
   background: transparent;
   border-radius: 8px 8px 0 0px;
   border: none;
-  width: 200px;
+  width: 180px;
 }
 
 #editor {
@@ -322,6 +348,19 @@ button {
 #replace-drag {
   cursor: move;
   user-select: none;
+}
+
+/* ===================================== */
+/* REPLACE BUTTONS */
+/* ===================================== */
+
+.replace-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.replace-buttons button {
+  flex: 1;
 }
 
 /* ===================================== */
@@ -981,4 +1020,151 @@ button {
 .light #update-title,
 .light #update-ready-text {
   color: #111827;
+}
+
+/* ===================================== */
+/* QUILL RESPONSIVE TOOLBAR */
+/* ===================================== */
+
+.ql-toolbar {
+  position: relative;
+
+  display: flex !important;
+
+  flex-wrap: nowrap !important;
+
+  align-items: center;
+
+  overflow: visible !important;
+
+  padding-right: 42px !important;
+}
+
+/* grupos */
+
+.ql-toolbar .ql-formats {
+  flex-shrink: 0 !important;
+
+  display: inline-flex !important;
+
+  align-items: center;
+
+  white-space: nowrap;
+}
+
+/* botão ⋯ */
+
+.toolbar-more {
+  position: absolute;
+
+  top: 6px;
+  right: 6px;
+
+  width: 28px;
+  height: 28px;
+
+  display: none;
+
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 6px;
+
+  z-index: 999;
+
+  cursor: pointer;
+
+  font-size: 18px;
+}
+
+/* dark */
+
+.dark .toolbar-more {
+  background: #374151;
+  color: white;
+}
+
+/* light */
+
+.light .toolbar-more {
+  background: #d1d5db;
+  color: #111827;
+}
+
+/* dropdown */
+
+.toolbar-dropdown {
+  position: absolute;
+
+  top: calc(100% + 6px);
+  right: 0;
+
+  display: none;
+
+  flex-wrap: wrap;
+
+  gap: 6px;
+
+  width: 340px;
+
+  padding: 10px;
+
+  border-radius: 10px;
+
+  z-index: 999999;
+}
+
+/* dark */
+
+.dark .toolbar-dropdown {
+  background: #1f2937;
+
+  border: 1px solid #374151;
+}
+
+/* light */
+
+.light .toolbar-dropdown {
+  background: rgb(182, 182, 182);
+
+  border: 1px solid #d1d5db;
+}
+
+/* aberto */
+
+.toolbar-dropdown.show {
+  display: flex;
+}
+
+/* ===================================== */
+/* STATUS BAR */
+/* ===================================== */
+
+#statusbar {
+  height: 26px;
+  min-height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 12px;
+  font-size: 12px;
+  border-top: 1px solid #374151;
+  user-select: none;
+  background: #1f2937;
+  color: #d1d5db;
+}
+
+.status-left,
+.status-right {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+/* LIGHT */
+
+.light #statusbar {
+  background: #e5e7eb;
+  color: #111827;
+  border-top: 1px solid #d1d5db;
 }

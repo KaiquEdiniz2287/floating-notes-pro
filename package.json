@@ -1,6 +1,6 @@
 {
   "name": "floating-notes-pro",
-  "version": "1.0.12",
+  "version": "1.1.0",
   "description": "Floating Notes Desktop",
   "author": "Kaio H. Diniz",
   "main": "main.js",
@@ -38,6 +38,8 @@
       "installerHeader": "assets/header.bmp",
       "installerIcon": "assets/icon-instal.ico",
       "uninstallerIcon": "assets/icon-unistal.ico",
+      "runAfterFinish": true,
+      "perMachine": true,
       "shortcutName": "Floating Notes Pro"
     },
     "forceCodeSigning": false

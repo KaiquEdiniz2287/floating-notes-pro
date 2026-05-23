@@ -34,6 +34,17 @@
       </div>
 
       <div id="editor"></div>
+
+      <div id="statusbar">
+        <div class="status-left">
+          <span id="cursor-pos">Ln 1, Col 1</span>
+        </div>
+
+        <div class="status-right">
+          <span id="char-count">0 caracteres</span>
+          <span id="word-count">0 palavras</span>
+        </div>
+      </div>
     </div>
 
     <!-- POPUP DE SUBSTITUIR POR -->
@@ -54,7 +65,10 @@
           Diferenciar maiúsculas/minúsculas
         </label>
 
-        <button id="replace-all">Substituir tudo</button>
+        <div class="replace-buttons">
+          <button id="find-next">Próximo</button>
+          <button id="replace-all">Substituir tudo</button>
+        </div>
       </div>
     </div>
 

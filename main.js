@@ -10,16 +10,47 @@ const store = new Store();
 // =====================================
 // CREATE WINDOW
 // =====================================
+// =====================================
+// WINDOW STATE
+// =====================================
+
+function getWindowState() {
+  return (
+    store.get("windowState") || {
+      width: 1100,
+      height: 750,
+      x: undefined,
+      y: undefined,
+      isMaximized: false,
+    }
+  );
+}
+
+// =====================================
+// CREATE WINDOW
+// =====================================
+
 function createWindow() {
+  const windowState = getWindowState();
+
   mainWindow = new BrowserWindow({
-    width: 1100,
-    height: 750,
+    width: windowState.width,
+    height: windowState.height,
+
+    x: windowState.x,
+    y: windowState.y,
+
     frame: true,
+
     minWidth: 700,
     minHeight: 500,
+
     backgroundColor: "#111827",
+
     autoHideMenuBar: true,
+
     title: `Floating Notes v${app.getVersion()}`,
+
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
       contextIsolation: true,
@@ -27,14 +58,48 @@ function createWindow() {
     },
   });
 
+  // RESTAURA MAXIMIZADO
+  if (windowState.isMaximized) {
+    mainWindow.maximize();
+  }
+
   mainWindow.loadFile("popup.html");
 
-  // DEVTOOLS
-  // mainWindow.webContents.openDevTools();
+  // =====================================
+  // SAVE WINDOW STATE
+  // =====================================
+
+  const saveWindowState = () => {
+    if (!mainWindow) return;
+
+    // NÃO salva tamanho minimizado
+    if (mainWindow.isMinimized()) return;
+
+    const bounds = mainWindow.getBounds();
+
+    store.set("windowState", {
+      width: bounds.width,
+      height: bounds.height,
+      x: bounds.x,
+      y: bounds.y,
+      isMaximized: mainWindow.isMaximized(),
+    });
+  };
+
+  // salva ao mover/redimensionar
+  mainWindow.on("resize", saveWindowState);
+  mainWindow.on("move", saveWindowState);
+
+  // salva ao maximizar/desmaximizar
+  mainWindow.on("maximize", saveWindowState);
+  mainWindow.on("unmaximize", saveWindowState);
 
   mainWindow.on("closed", () => {
     mainWindow = null;
   });
+
+  // DEVTOOLS
+  // mainWindow.webContents.openDevTools();
 }
 
 // =====================================

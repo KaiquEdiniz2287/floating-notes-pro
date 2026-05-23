@@ -309,8 +309,12 @@ const toolbar = document.querySelector(".ql-toolbar");
 toolbar.addEventListener("mousedown", (e) => {
   const button = e.target.closest("button");
 
-  // só botões normais
   if (!button) return;
+
+  // PERMITE O BOTÃO ...
+  if (button.classList.contains("toolbar-more")) {
+    return;
+  }
 
   e.preventDefault();
 });
@@ -853,9 +857,36 @@ function renderTabs() {
 
       tab.draggable = true;
 
-      tabData.title = title.innerText.trim() || "Sem título";
+      // nome digitado
+      let newTitle = title.innerText.trim() || "Sem título";
 
-      title.innerText = tabData.title;
+      // remove a própria aba da comparação
+      const existing = state.tabs
+        .filter((_, i) => i !== index)
+        .map((t) => t.title);
+
+      // função local pra evitar conflito
+      function makeUnique(name) {
+        if (!existing.includes(name)) {
+          return name;
+        }
+
+        let counter = 1;
+
+        while (existing.includes(`${name} (${counter})`)) {
+          counter++;
+        }
+
+        return `${name} (${counter})`;
+      }
+
+      newTitle = makeUnique(newTitle);
+
+      tabData.title = newTitle;
+
+      title.innerText = newTitle;
+
+      title.title = newTitle;
 
       await saveState();
     });
@@ -877,6 +908,27 @@ function renderTabs() {
   });
 }
 
+// =====================================
+// UNIQUE TAB NAME
+// =====================================
+
+function getUniqueTabName(baseName) {
+  const existing = state.tabs.map((t) => t.title);
+
+  // se não existir igual
+  if (!existing.includes(baseName)) {
+    return baseName;
+  }
+
+  let counter = 1;
+
+  while (existing.includes(`${baseName} (${counter})`)) {
+    counter++;
+  }
+
+  return `${baseName} (${counter})`;
+}
+
 // ==========================
 // ADD TAB
 // ==========================
@@ -885,7 +937,7 @@ addTabBtn.addEventListener("click", async () => {
   saveCurrentTab();
 
   state.tabs.push({
-    title: `Nota ${state.tabs.length + 1}`,
+    title: getUniqueTabName(`Nota ${state.tabs.length + 1}`),
 
     content: {
       ops: [],
@@ -971,16 +1023,14 @@ closeExport.onclick = () => {
 // TXT
 
 exportTxtBtn.onclick = () => {
+  const current = state.tabs[state.currentTab];
   const text = quill.getText();
-
   const blob = new Blob([text], { type: "text/plain" });
   const url = URL.createObjectURL(blob);
-
   const a = document.createElement("a");
   a.href = url;
-  a.download = "nota.txt";
+  a.download = `${current.title}.txt`;
   a.click();
-
   URL.revokeObjectURL(url);
   exportPopup.classList.add("hidden");
 };
@@ -1117,15 +1167,37 @@ importFile.addEventListener("change", async (e) => {
   reader.onload = async () => {
     const text = reader.result;
 
-    // IMPORTA COMO TEXTO
-
-    quill.setText(text, "user");
-
-    // SALVA NA ABA ATUAL
-
+    // SALVA ABA ATUAL ANTES
     saveCurrentTab();
 
+    // NOME DO ARQUIVO SEM .txt
+    const fileName = getUniqueTabName(file.name.replace(/\.[^/.]+$/, ""));
+
+    // NOVA ABA
+    state.tabs.push({
+      title: fileName || `Nota ${state.tabs.length + 1}`,
+
+      content: {
+        ops: [
+          {
+            insert: text,
+          },
+        ],
+      },
+    });
+
+    // MUDA PRA NOVA ABA
+    state.currentTab = state.tabs.length - 1;
+
+    // RENDER
+    renderTabs();
+
+    loadCurrentTab();
+
     await saveState();
+
+    // limpa input pra permitir importar mesmo arquivo novamente
+    importFile.value = "";
   };
 
   reader.readAsText(file);
@@ -1191,6 +1263,9 @@ const replaceInput = document.getElementById("replace-input");
 const caseSensitive = document.getElementById("case-sensitive");
 
 const replaceAllBtn = document.getElementById("replace-all");
+findInput.addEventListener("input", () => {
+  lastFindIndex = 0;
+});
 const closeReplace = document.getElementById("close-replace");
 
 // ABRIR (CTRL + H)
@@ -1209,6 +1284,62 @@ document.addEventListener("keydown", (e) => {
 
 closeReplace.onclick = () => {
   replacePopup.classList.add("hidden");
+};
+
+// =====================================
+// FIND NEXT
+// =====================================
+
+const findNextBtn = document.getElementById("find-next");
+
+let lastFindIndex = 0;
+
+findNextBtn.onclick = () => {
+  const find = findInput.value;
+
+  if (!find) return;
+
+  const flags = caseSensitive.checked ? "g" : "gi";
+
+  try {
+    const escapeRegex = (text) => text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+    const regex = new RegExp(escapeRegex(find), flags);
+
+    const text = quill.getText();
+
+    regex.lastIndex = lastFindIndex;
+
+    const match = regex.exec(text);
+
+    // encontrou
+    if (match) {
+      const index = match.index;
+
+      quill.setSelection(index, match[0].length, "user");
+
+      quill.scrollIntoView();
+
+      lastFindIndex = index + match[0].length;
+    }
+
+    // reinicia busca
+    else {
+      lastFindIndex = 0;
+
+      const restartMatch = regex.exec(text);
+
+      if (restartMatch) {
+        quill.setSelection(restartMatch.index, restartMatch[0].length, "user");
+
+        quill.scrollIntoView();
+
+        lastFindIndex = restartMatch.index + restartMatch[0].length;
+      }
+    }
+  } catch (err) {
+    console.error("Erro find:", err);
+  }
 };
 
 // SUBSTITUIR TUDO
@@ -1389,6 +1520,145 @@ document.getElementById("update-restart-btn").addEventListener("click", () => {
 
 document.getElementById("update-later-btn").addEventListener("click", () => {
   updateOverlay.classList.add("hidden");
+});
+
+// =====================================
+// QUILL TOOLBAR RESPONSIVE
+// =====================================
+
+function initResponsiveToolbar() {
+  const toolbar = document.querySelector(".ql-toolbar");
+
+  if (!toolbar) return;
+
+  // evita duplicar
+  if (toolbar.dataset.responsiveReady) return;
+
+  toolbar.dataset.responsiveReady = "true";
+
+  // botão
+  const moreBtn = document.createElement("button");
+
+  moreBtn.className = "toolbar-more";
+
+  moreBtn.innerHTML = "⋯";
+
+  // dropdown
+  const dropdown = document.createElement("div");
+
+  dropdown.className = "toolbar-dropdown";
+
+  toolbar.appendChild(moreBtn);
+
+  toolbar.appendChild(dropdown);
+
+  // grupos originais
+  const groups = [...toolbar.querySelectorAll(".ql-formats")];
+
+  function update() {
+    // devolve tudo
+    groups.forEach((group) => {
+      toolbar.insertBefore(group, moreBtn);
+    });
+
+    dropdown.innerHTML = "";
+
+    moreBtn.style.display = "none";
+
+    const toolbarRect = toolbar.getBoundingClientRect();
+
+    const limit = toolbarRect.right - 50;
+
+    let collision = false;
+
+    groups.forEach((group) => {
+      const rect = group.getBoundingClientRect();
+
+      // PRIMEIRA COLISÃO REAL
+      if (rect.right > limit || collision) {
+        collision = true;
+
+        dropdown.appendChild(group);
+
+        moreBtn.style.display = "flex";
+      }
+    });
+
+    // fecha se vazio
+    if (!dropdown.children.length) {
+      dropdown.classList.remove("show");
+    }
+  }
+
+  // toggle
+  moreBtn.addEventListener("mousedown", (e) => {
+    e.stopPropagation();
+
+    dropdown.classList.toggle("show");
+  });
+
+  // fechar fora
+  document.addEventListener("click", (e) => {
+    if (!dropdown.contains(e.target) && !moreBtn.contains(e.target)) {
+      dropdown.classList.remove("show");
+    }
+  });
+
+  // resize
+  window.addEventListener("resize", () => {
+    requestAnimationFrame(update);
+  });
+
+  // primeira render
+  setTimeout(update, 200);
+}
+
+initResponsiveToolbar();
+
+// =====================================
+// STATUS BAR
+// =====================================
+
+const cursorPosEl = document.getElementById("cursor-pos");
+const charCountEl = document.getElementById("char-count");
+const wordCountEl = document.getElementById("word-count");
+
+function updateStatusBar() {
+  const range = quill.getSelection();
+
+  // POSIÇÃO CURSOR
+  if (range) {
+    const textBefore = quill.getText(0, range.index);
+
+    const lines = textBefore.split("\n");
+
+    const line = lines.length;
+
+    const col = lines[lines.length - 1].length + 1;
+
+    cursorPosEl.textContent = `Ln ${line}, Col ${col}`;
+  }
+
+  // TEXTO TOTAL
+  const text = quill.getText().trim();
+
+  // CARACTERES
+  charCountEl.textContent = `${text.length} caracteres`;
+
+  // PALAVRAS
+  const words = text ? text.split(/\s+/).length : 0;
+
+  wordCountEl.textContent = `${words} palavras`;
+}
+
+// CURSOR
+quill.on("selection-change", () => {
+  updateStatusBar();
+});
+
+// TEXTO
+quill.on("text-change", () => {
+  updateStatusBar();
 });
 
 // =====================================
