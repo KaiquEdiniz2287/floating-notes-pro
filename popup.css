@@ -173,6 +173,12 @@ button {
 .ql-toolbar {
   border: none !important;
   border-bottom: 1px solid #374151 !important;
+  position: relative;
+  display: flex !important;
+  flex-wrap: nowrap !important;
+  align-items: center;
+  overflow: visible !important;
+  padding-right: 42px !important;
 }
 
 .ql-container {
@@ -1039,15 +1045,6 @@ button {
 /* ===================================== */
 /* QUILL RESPONSIVE TOOLBAR */
 /* ===================================== */
-
-.ql-toolbar {
-  position: relative;
-  display: flex !important;
-  flex-wrap: nowrap !important;
-  align-items: center;
-  overflow: visible !important;
-  padding-right: 42px !important;
-}
 
 /* grupos */
 

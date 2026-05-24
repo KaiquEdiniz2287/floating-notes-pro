@@ -1,7 +1,3 @@
-const STORAGE_KEY = "floatingNotesData";
-
-const POPUP_POS_KEY = "replacePopupPosition";
-
 const tabsEl = document.getElementById("tabs");
 
 const addTabBtn = document.getElementById("add-tab");
@@ -251,11 +247,18 @@ const quill = new window.Quill("#editor", {
           saveState();
         },
 
-        clearAll: function () {
-          const confirmed = confirm("Apagar todo o conteúdo desta aba?");
+        clearAll: async function () {
+          const confirmed = await customConfirm(
+            "Apagar todo o conteúdo desta aba?",
+            "Limpar conteúdo",
+          );
+
           if (!confirmed) return;
+
           quill.setContents([{ insert: "\n" }], "user");
+
           saveCurrentTab();
+
           saveState();
         },
 
@@ -312,7 +315,7 @@ const keepEditorFocusSelectors = [
   "#topbar",
   "#actions",
   "#tabs-wrapper",
-  ".statusbar",
+  "#statusbar",
   ".color-item",
 ];
 
@@ -611,9 +614,6 @@ document.addEventListener("mousedown", (e) => {
   }
 });
 
-// =====================================
-// SHORTCUTS
-// =====================================
 
 // =====================================
 // TEXT TRANSFORM
@@ -657,9 +657,7 @@ function transformText(type) {
   quill.setSelection(range.index, transformed.length);
 }
 
-// =====================================
-// SPELL CHECK CONTEXT MENU
-// =====================================
+
 
 // ==========================
 // LOAD
@@ -855,6 +853,7 @@ function renderTabs() {
 
       const confirmed = await customConfirm(
         `Deseja realmente fechar a aba "${tabData.title}"?`,
+        "Fechar aba",
       );
 
       if (!confirmed) return;
@@ -1753,8 +1752,6 @@ function initResponsiveToolbar() {
   setTimeout(update, 200);
 }
 
-initResponsiveToolbar();
-
 // =====================================
 // STATUS BAR
 // =====================================
@@ -1802,14 +1799,19 @@ quill.on("text-change", () => {
 // =====================================
 // CONFIRMAÇÃO DE FECHAMENTO DA ABA
 // =====================================
+const confirmTitle = document.getElementById("confirm-title");
 const confirmPopup = document.getElementById("confirm-popup");
 const confirmMessage = document.getElementById("confirm-message");
 const confirmOk = document.getElementById("confirm-ok");
 const confirmCancel = document.getElementById("confirm-cancel");
 
-function customConfirm(message) {
+function customConfirm(message, title = "Confirmação") {
   return new Promise((resolve) => {
+    confirmTitle.textContent = title;
+
     confirmMessage.textContent = message;
+
+    document.querySelector(".confirm-title").textContent = title;
 
     confirmPopup.classList.remove("hidden");
 
@@ -1843,7 +1845,6 @@ function customConfirm(message) {
 
       document.removeEventListener("keydown", handleKey);
 
-      // restaura foco editor
       requestAnimationFrame(() => {
         quill.focus();
       });
@@ -1876,3 +1877,4 @@ window.electronAPI.onNewTabShortcut(() => {
 loadState();
 updateColorUI();
 setupCustomColorPickers();
+initResponsiveToolbar();

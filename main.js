@@ -8,9 +8,6 @@ const { autoUpdater } = require("electron-updater");
 const store = new Store();
 
 // =====================================
-// CREATE WINDOW
-// =====================================
-// =====================================
 // WINDOW STATE
 // =====================================
 
@@ -175,11 +172,11 @@ app.whenReady().then(() => {
 // =====================================
 // STORE IPC
 // =====================================
-ipcMain.handle("load-notes", () => store.get("notes"));
+/* ipcMain.handle("load-notes", () => store.get("notes"));
 ipcMain.handle("save-notes", (event, notes) => {
   store.set("notes", notes);
   return true;
-});
+}); */
 
 // =====================================
 // MACOS
