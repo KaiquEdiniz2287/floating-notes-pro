@@ -6,6 +6,7 @@
     <title>Notas Independente</title>
     <link rel="stylesheet" href="popup.css" />
     <link rel="stylesheet" href="quill/quill.snow.css" />
+    <link rel="stylesheet" href="./assets/fontawesome-free/css/all.min.css" />
   </head>
 
   <body class="dark">
@@ -18,9 +19,15 @@
 
         <div id="actions">
           <input type="text" id="search" placeholder="Pesquisar..." />
-          <button id="export-btn" title="Baixar nota">▼</button>
-          <button id="import-btn" title="Carregar nota">▲</button>
-          <button id="replace-btn" title="Localizar e substituir">🔍</button>
+          <button id="export-btn" title="Baixar nota">
+            <i class="fa-solid fa-download"></i>
+          </button>
+          <button id="import-btn" title="Carregar nota">
+            <i class="fa-solid fa-upload"></i>
+          </button>
+          <button id="replace-btn" title="Localizar e substituir">
+            <i class="fa-solid fa-magnifying-glass"></i>
+          </button>
           <button id="theme-btn" class="theme-toggle" title="Tema">
             <span class="theme-icon">🌙</span>
           </button>
@@ -98,7 +105,12 @@
     <!-- UPDATE OVERLAY -->
     <div id="update-overlay" class="update-overlay hidden">
       <div class="update-box">
-        <div id="update-icon">⬇️</div>
+        <div id="update-icon">
+          <i
+            class="fa-solid fa-cloud-arrow-down"
+            style="color: rgb(0, 255, 0)"
+          ></i>
+        </div>
         <div id="update-title">Nova versão disponível</div>
         <div id="update-subtitle">Baixando atualização...</div>
         <div class="update-progress-wrap" id="update-progress-wrap">

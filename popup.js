@@ -113,43 +113,20 @@ const OFFICE_COLORS = [
 
 const icons = window.Quill.import("ui/icons");
 
-icons.undo = `
-  <svg viewBox="0 0 18 18">
-    <path class="ql-stroke"
-      d="M7 10l-4 -4l4 -4" />
+icons.undo = `<i class="fa-solid fa-rotate-left"></i>`;
 
-    <path class="ql-stroke"
-      d="M3 6h7a5 5 0 1 1 0 10h-1" />
-  </svg>
-`;
+icons.redo = `<i class="fa-solid fa-rotate-right"></i>`;
 
-icons.redo = `
-  <svg viewBox="0 0 18 18">
-    <path class="ql-stroke"
-      d="M11 10l4 -4l-4 -4" />
+icons.uppercase = '<i class="fa-solid fa-arrow-up-a-z"></i>';
 
-    <path class="ql-stroke"
-      d="M15 6h-7a5 5 0 1 0 0 10h1" />
-  </svg>
-`;
-
-icons.uppercase = "A↑";
-
-icons.lowercase = "a↓";
+icons.lowercase = '<i class="fa-solid fa-arrow-down-a-z"></i>';
 
 icons.capitalize = "Aa";
 
-icons.clearAll = `
-  <svg viewBox="0 0 18 18">
-    <path class="ql-stroke" d="M3 3l12 12M3 15L15 3"/>
-  </svg>
-`;
-icons.copyAll = `
-  <svg viewBox="0 0 18 18">
-    <rect class="ql-stroke" x="3" y="5" width="9" height="11" rx="1"/>
-    <path class="ql-stroke" d="M6 5V4a1 1 0 0 1 1-1h7a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1h-1"/>
-  </svg>
-`;
+icons.clearAll = `<i class="fa-solid fa-trash-can"></i>`;
+icons.copyAll = `<i class="fa-solid fa-copy"></i>`;
+
+icons.clean = `<i class="fa-solid fa-text-slash"></i>`;
 
 // =====================================
 // QUILL
@@ -201,7 +178,7 @@ const quill = new window.Quill("#editor", {
         lowercase: () => transformText("lower"),
         capitalize: () => transformText("capitalize"),
 
-        // 🎨 COR TEXTO
+        // COR TEXTO
         color: function (value) {
           // LIMPAR COR
           if (value === false) {
@@ -224,7 +201,7 @@ const quill = new window.Quill("#editor", {
           saveState();
         },
 
-        // 🖍️ COR FUNDO
+        // COR FUNDO
         background: function (value) {
           // LIMPAR FUNDO
           if (value === false) {
@@ -286,7 +263,7 @@ const bgPicker = document.querySelector(".ql-background");
 if (colorPicker) {
   colorPicker.innerHTML = `
     <button class="color-apply-btn" id="apply-color-btn" title="Aplicar cor">
-      <span class="color-btn-letter">A</span>
+      <span class="color-btn-letter"><i class="fa-solid fa-paintbrush"></i></span>
       <span class="color-btn-bar" id="color-bar"></span>
     </button>
     <button class="color-arrow-btn" id="open-color-picker" title="Escolher cor">▾</button>
@@ -295,7 +272,7 @@ if (colorPicker) {
 if (bgPicker) {
   bgPicker.innerHTML = `
     <button class="color-apply-btn" id="apply-bg-btn" title="Aplicar cor de fundo">
-      <span class="color-btn-letter">🖍</span>
+      <span class="color-btn-letter"><i class="fa-solid fa-brush"></i></span>
       <span class="color-btn-bar" id="bg-bar"></span>
     </button>
     <button class="color-arrow-btn" id="open-bg-picker" title="Escolher cor de fundo">▾</button>
@@ -614,7 +591,6 @@ document.addEventListener("mousedown", (e) => {
   }
 });
 
-
 // =====================================
 // TEXT TRANSFORM
 // =====================================
@@ -656,8 +632,6 @@ function transformText(type) {
 
   quill.setSelection(range.index, transformed.length);
 }
-
-
 
 // ==========================
 // LOAD
@@ -1645,7 +1619,8 @@ window.electronAPI.onUpdateProgress((percent) => {
 });
 
 window.electronAPI.onUpdateDownloaded(() => {
-  updateIcon.textContent = "✅";
+  updateIcon.innerHTML =
+    '<i class="fa-solid fa-check-to-slot" style="color: rgb(0, 255, 0);"></i>';
   updateTitle.textContent = "Atualização pronta!";
   updateSubtitle.textContent = "";
   updatePercent.textContent = "";

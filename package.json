@@ -1,6 +1,6 @@
 {
   "name": "floating-notes-pro",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Floating Notes Desktop",
   "author": "Kaio H. Diniz",
   "main": "main.js",
@@ -35,7 +35,7 @@
       "allowToChangeInstallationDirectory": false,
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
-      "installerSidebar": "assets/sidebar.bmp",
+      "installerSidebar": "assets/Sidebar.bmp",
       "installerHeader": "assets/header.bmp",
       "installerIcon": "assets/icon-instal.ico",
       "uninstallerIcon": "assets/icon-unistal.ico",
@@ -49,6 +49,7 @@
     "electron-builder": "^26.8.1"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-free": "^7.2.0",
     "electron-store": "^8.2.0",
     "electron-updater": "^6.8.3"
   }

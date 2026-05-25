@@ -119,39 +119,22 @@ button {
 
 #actions {
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   gap: 4px;
 }
 
-#export-btn {
-  height: 28px;
-  width: 28px;
-  padding: 6px 6px;
-  transition: transform 0.2s ease;
-}
-
-#import-btn {
-  height: 28px;
-  width: 28px;
-  padding: 6px 6px;
-  transition: transform 0.2s ease;
-}
-
-#export-btn:hover {
-  transform: scale(1.08);
-}
-
-#import-btn:hover {
-  transform: scale(1.08);
-}
-
+#export-btn,
+#import-btn,
 #replace-btn {
   height: 28px;
   width: 28px;
   padding: 6px 6px;
+  border-radius: 8px;
   transition: transform 0.2s ease;
-  font-size: 12px;
 }
+
+#export-btn:hover,
+#import-btn:hover,
 #replace-btn:hover {
   transform: scale(1.08);
 }
@@ -159,7 +142,7 @@ button {
 #search {
   padding: 8px 10px;
   background: transparent;
-  border-radius: 8px 8px 0 0px;
+  border-radius: 8px;
   border: none;
   width: 180px;
   color: white;
@@ -620,20 +603,50 @@ button {
 /* DARK */
 .dark .ql-uppercase,
 .dark .ql-lowercase,
-.dark .ql-capitalize {
+.dark .ql-capitalize,
+.dark .ql-undo,
+.dark .ql-redo,
+.dark .ql-clearAll,
+.dark .ql-copyAll,
+.dark .ql-clean {
   color: #ffffff !important;
+}
+
+.dark .ql-uppercase:hover,
+.dark .ql-lowercase:hover,
+.dark .ql-capitalize:hover,
+.dark .ql-undo:hover,
+.dark .ql-redo:hover,
+.dark .ql-clearAll:hover,
+.dark .ql-copyAll:hover,
+.dark .ql-clean:hover {
+  color: #60a5fa !important;
 }
 
 /* LIGHT */
 .light .ql-uppercase,
 .light .ql-lowercase,
-.light .ql-capitalize {
+.light .ql-capitalize,
+.light .ql-undo,
+.light .ql-redo,
+.light .ql-clearAll,
+.light .ql-copyAll,
+.light .ql-clean {
   color: #111827 !important;
+}
+.light .ql-uppercase:hover,
+.light .ql-lowercase:hover,
+.light .ql-capitalize:hover,
+.light .ql-undo:hover,
+.light .ql-redo:hover,
+.light .ql-clearAll:hover,
+.light .ql-copyAll:hover,
+.light .ql-clean:hover {
+  color: #2563eb !important;
 }
 
 .dark .ql-picker-options {
   background: #1f2937 !important;
-
   border: 1px solid #374151 !important;
 }
 
