@@ -1,16 +1,20 @@
 const tabsEl = document.getElementById("tabs");
-
 const addTabBtn = document.getElementById("add-tab");
-
 const searchEl = document.getElementById("search");
-
 const themeBtn = document.getElementById("theme-btn");
-
 const exportBtn = document.getElementById("export-btn");
-
 const importBtn = document.getElementById("import-btn");
-
 const importFile = document.getElementById("import-file");
+const downloadToast = document.getElementById("download-toast");
+const openPdfBtn = document.getElementById("open-pdf-btn");
+
+let lastDownloadedPdf = null;
+
+openPdfBtn.addEventListener("click", async () => {
+  if (!lastDownloadedPdf) return;
+
+  await window.electronAPI.openFile(lastDownloadedPdf);
+});
 
 let state = {
   theme: "dark",
@@ -39,72 +43,137 @@ state.recentColors = state.recentColors || [];
 state.recentBackgrounds = state.recentBackgrounds || [];
 
 const OFFICE_COLORS = [
-  // Linha 1 — preto ao branco
+  // Escala de Cinza
   "#000000",
-  "#1f1f1f",
-  "#3d3d3d",
-  "#5c5c5c",
-  "#7a7a7a",
+  "#1A1A1A",
+  "#333333",
+  "#666666",
+  "#808080",
   "#999999",
-  "#b8b8b8",
-  "#d6d6d6",
-  "#f0f0f0",
-  "#ffffff",
-  // Linha 2 — cores vivas
-  "#ff0000",
-  "#ff4000",
-  "#ff8000",
-  "#ffbf00",
-  "#ffff00",
-  "#80ff00",
-  "#00ff00",
-  "#00ff80",
-  "#00ffff",
-  "#0080ff",
-  // Linha 3 — cores médias
-  "#8000ff",
-  "#ff00ff",
-  "#ff0080",
-  "#ff6666",
-  "#ffb366",
-  "#ffff66",
-  "#b3ff66",
-  "#66ffcc",
-  "#66b3ff",
+  "#B3B3B3",
+  "#CCCCCC",
+  "#E6E6E6",
+  "#FFFFFF",
+
+  // Amarelo
+  "#FFF200",
+  "#FFF9D9",
+  "#FFF2B3",
+  "#FFE066",
+  "#FFD700",
+  "#D9D900",
+  "#999900",
+  "#7F6000",
+  "#4F3B00",
+  "#332400",
+
+  // Dourado
+  "#FFC000",
+  "#FFF2CC",
+  "#FFE699",
+  "#FFD966",
+  "#FFC000",
+  "#E6AC00",
+  "#BF9000",
+  "#7F6000",
+  "#4F3B00",
+  "#332400",
+
+  // Laranja
+  "#FF8C00",
+  "#FFE0BF",
+  "#F9CB9C",
+  "#F6B26B",
+  "#FF9900",
+  "#E69100",
+  "#B45F06",
+  "#783F04",
+  "#5A2D0C",
+  "#3D1F00",
+
+  // Laranja Avermelhado
+  "#FF4200",
+  "#FFD6CC",
+  "#F4B183",
+  "#FF9966",
+  "#FF6600",
+  "#E65C00",
+  "#B45F06",
+  "#783F04",
+  "#5A2D0C",
+  "#3D1F00",
+
+  // Vermelho
+  "#FF0000",
+  "#FFD9D9",
+  "#EA9999",
+  "#FF6666",
+  "#FF3333",
+  "#CC0000",
+  "#990000",
+  "#660000",
+  "#4C0000",
+  "#330000",
+
+  // Rosa / Magenta
+  "#C0007A",
+  "#F4CCCC",
+  "#D5A6BD",
+  "#C27BA0",
+  "#A64D79",
+  "#990066",
+  "#741B47",
+  "#4C1130",
+  "#351C2A",
+  "#220011",
+
+  // Roxo
+  "#800080",
+  "#D9D2E9",
+  "#B4A7D6",
+  "#8E7CC3",
+  "#674EA7",
+  "#5B2C83",
+  "#351C75",
+  "#20124D",
+  "#1C0F33",
+  "#12001A",
+
+  // Azul
   "#0000ff",
-  // Linha 4 — tons pastel
-  "#f4cccc",
-  "#fce5cd",
-  "#fff2cc",
-  "#d9ead3",
-  "#d0e0e3",
-  "#cfe2f3",
-  "#d9d2e9",
-  "#ead1dc",
-  "#f4b8c1",
-  "#c9daf8",
-  // Linha 5 — tons médios
-  "#ea9999",
-  "#f9cb9c",
-  "#ffe599",
-  "#b6d7a8",
-  "#a2c4c9",
-  "#9fc5e8",
-  "#b4a7d6",
-  "#d5a6bd",
-  "#e06666",
-  "#6d9eeb",
-  // Linha 6 — tons escuros
-  "#cc0000",
-  "#e69138",
-  "#f1c232",
-  "#6aa84f",
-  "#45818e",
-  "#3d85c6",
-  "#674ea7",
-  "#a64d79",
-  "#85200c",
-  "#1c4587",
+  "#DCE6F1",
+  "#B7C9E2",
+  "#6FA8DC",
+  "#3D85C6",
+  "#3C78D8",
+  "#1C4587",
+  "#073763",
+  "#1B2A49",
+  "#0F1A2B",
+
+  // Verde Azulado
+  "#1B8D6B",
+  "#D9EAD3",
+  "#A2C4C9",
+  "#76A5AF",
+  "#45818E",
+  "#0B8043",
+  "#134F5C",
+  "#0C343D",
+  "#1B2D2F",
+  "#102020",
+
+  // Verde
+  "#00ff00",
+  "#E2F0D9",
+  "#B6D7A8",
+  "#93C47D",
+  "#6AA84F",
+  "#3FAF46",
+  "#38761D",
+  "#274E13",
+  "#1F3A0F",
+  "#102B0F",
 ];
 
 // =====================================
@@ -1116,16 +1185,20 @@ closeExport.onclick = () => {
 
 // TXT
 
-exportTxtBtn.onclick = () => {
+exportTxtBtn.onclick = async () => {
   const current = state.tabs[state.currentTab];
   const text = quill.getText();
-  const blob = new Blob([text], { type: "text/plain" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = `${current.title}.txt`;
-  a.click();
-  URL.revokeObjectURL(url);
+  const savedPath = await window.electronAPI.saveTxt({
+    filename: `${current.title}.txt`,
+    content: text,
+  });
+  if (!savedPath) return;
+  lastDownloadedPdf = savedPath;
+  downloadToast.classList.remove("hidden");
+  clearTimeout(downloadToast.hideTimer);
+  downloadToast.hideTimer = setTimeout(() => {
+    downloadToast.classList.add("hidden");
+  }, 5000);
   exportPopup.classList.add("hidden");
 };
 
@@ -1230,13 +1303,35 @@ exportPdfBtn.onclick = () => {
 
   const opt = {
     margin: 10,
-    filename: `${current.title}.pdf`,
     html2canvas: { scale: 2 },
     jsPDF: { unit: "mm", format: "a4" },
     pagebreak: { mode: ["avoid-all"] },
   };
 
-  html2pdf().set(opt).from(clone).save();
+  html2pdf()
+    .set(opt)
+    .from(clone)
+    .outputPdf("blob")
+    .then(async (pdfBlob) => {
+      const arrayBuffer = await pdfBlob.arrayBuffer();
+
+      const savedPath = await window.electronAPI.savePdf({
+        filename: `${current.title}.pdf`,
+        data: Array.from(new Uint8Array(arrayBuffer)),
+      });
+
+      if (!savedPath) return;
+
+      lastDownloadedPdf = savedPath;
+
+      downloadToast.classList.remove("hidden");
+
+      clearTimeout(downloadToast.hideTimer);
+
+      downloadToast.hideTimer = setTimeout(() => {
+        downloadToast.classList.add("hidden");
+      }, 5000);
+    });
 
   exportPopup.classList.add("hidden");
 };
@@ -1655,7 +1750,7 @@ function initResponsiveToolbar() {
 
   moreBtn.className = "toolbar-more";
 
-  moreBtn.innerHTML = "⋯";
+  moreBtn.innerHTML = '<i class="fa-solid fa-angles-down"></i>';
 
   // dropdown
   const dropdown = document.createElement("div");

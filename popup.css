@@ -932,7 +932,7 @@ button {
 /* ===================================== */
 .update-overlay {
   position: fixed;
-  bottom: 24px;
+  bottom: 30px;
   right: 24px;
   z-index: 999999;
 }
@@ -1072,17 +1072,16 @@ button {
 
 .toolbar-more {
   position: absolute;
-  top: 6px;
+  top: 8px;
   right: 6px;
-  width: 28px;
-  height: 28px;
+  width: 15px;
+  height: 15px;
   display: none;
   align-items: center;
   justify-content: center;
   border-radius: 6px;
   z-index: 999;
   cursor: pointer;
-  font-size: 18px;
 }
 
 /* dark */
@@ -1214,3 +1213,81 @@ button {
 .confirm-actions button {
   border-radius: 6px;
 }
+
+/* CONFIRMAÇÃO DE DOWNLOAD */
+.download-toast {
+  position: fixed;
+
+  left: 20px;
+  bottom: 30px;
+
+  display: flex;
+  align-items: center;
+  gap: 14px;
+
+  min-width: 260px;
+
+  padding: 14px;
+
+  border-radius: 14px;
+
+  background: #1f2937;
+
+  border: 1px solid rgba(255, 255, 255, 0.08);
+
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+
+  z-index: 999999;
+
+  animation: toastIn 0.25s ease;
+}
+
+.download-toast.hidden {
+  display: none;
+}
+
+.download-toast-icon {
+  font-size: 28px;
+}
+
+.download-toast-title {
+  font-size: 14px;
+  font-weight: 600;
+
+  margin-bottom: 8px;
+
+  color: white;
+}
+
+#open-pdf-btn {
+  border: none;
+
+  padding: 7px 12px;
+
+  border-radius: 8px;
+
+  cursor: pointer;
+
+  background: #2563eb;
+
+  color: white;
+
+  font-size: 12px;
+}
+
+#open-pdf-btn:hover {
+  opacity: 0.9;
+}
+
+@keyframes toastIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+/* ---------------------------------- */

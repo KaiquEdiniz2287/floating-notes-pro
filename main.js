@@ -1,4 +1,10 @@
-const { app, BrowserWindow, globalShortcut, ipcMain } = require("electron"); // Menu e MenuItem removidos
+const {
+  app,
+  BrowserWindow,
+  globalShortcut,
+  ipcMain,
+  shell,
+} = require("electron"); // Menu e MenuItem removidos
 
 const path = require("path");
 // https e fs removidos — não são mais usados
@@ -6,6 +12,9 @@ const path = require("path");
 const Store = require("electron-store");
 const { autoUpdater } = require("electron-updater");
 const store = new Store();
+
+const { dialog } = require("electron");
+const fs = require("fs");
 
 // =====================================
 // WINDOW STATE
@@ -170,13 +179,40 @@ app.whenReady().then(() => {
 });
 
 // =====================================
-// STORE IPC
+// IPC
 // =====================================
 /* ipcMain.handle("load-notes", () => store.get("notes"));
 ipcMain.handle("save-notes", (event, notes) => {
   store.set("notes", notes);
   return true;
 }); */
+/* SALVA PDF */
+ipcMain.handle("save-pdf", async (_, pdf) => {
+  const result = await dialog.showSaveDialog({
+    defaultPath: pdf.filename,
+    filters: [{ name: "PDF", extensions: ["pdf"] }],
+  });
+  if (result.canceled) return;
+  fs.writeFileSync(result.filePath, Buffer.from(pdf.data));
+  return result.filePath;
+});
+/* ABRE ARQUIVO */
+ipcMain.handle("open-file", async (_, filePath) => {
+  shell.openPath(filePath);
+});
+/* SALVA TXT */
+ipcMain.handle("save-txt", async (_, txt) => {
+  const result = await dialog.showSaveDialog({
+    defaultPath: txt.filename,
+    filters: [{ name: "Texto", extensions: ["txt"] }],
+  });
+
+  if (result.canceled) return;
+
+  fs.writeFileSync(result.filePath, txt.content, "utf-8");
+
+  return result.filePath;
+});
 
 // =====================================
 // MACOS
