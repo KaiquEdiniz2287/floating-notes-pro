@@ -1155,7 +1155,7 @@ button {
 .status-right {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 13px;
 }
 
 /* LIGHT */
@@ -1290,4 +1290,5 @@ button {
     transform: translateY(0);
   }
 }
+/* ---------------------------------- */
 /* ---------------------------------- */

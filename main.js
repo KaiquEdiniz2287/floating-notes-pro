@@ -180,7 +180,7 @@ app.whenReady().then(() => {
 
 // =====================================
 // IPC
-// =====================================
+// ===================================
 /* ipcMain.handle("load-notes", () => store.get("notes"));
 ipcMain.handle("save-notes", (event, notes) => {
   store.set("notes", notes);

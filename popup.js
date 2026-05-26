@@ -1220,10 +1220,66 @@ exportPdfBtn.onclick = () => {
   clone.style.padding = "20px";
   clone.style.background = "#fff";
   clone.style.color = "#000";
-
-  // 🔥 CONVERTE CHECKLIST DO QUILL
   // =====================================
-  // 🔥 FIX TOTAL LISTAS (CHECK + BULLET)
+  // QUILL PDF STYLES
+  // =====================================
+
+  clone.style.fontFamily = "Arial, sans-serif";
+  clone.style.fontSize = "14px";
+  clone.style.lineHeight = "1.5";
+  clone.style.whiteSpace = "normal";
+  clone.style.wordBreak = "break-word";
+
+  // FONTES
+  clone.querySelectorAll(".ql-font-monospace").forEach((el) => {
+    el.style.fontFamily = "monospace";
+  });
+
+  clone.querySelectorAll(".ql-font-serif").forEach((el) => {
+    el.style.fontFamily = "serif";
+  });
+
+  // TAMANHOS
+  clone.querySelectorAll(".ql-size-small").forEach((el) => {
+    el.style.fontSize = "12px";
+  });
+
+  clone.querySelectorAll(".ql-size-large").forEach((el) => {
+    el.style.fontSize = "22px";
+  });
+
+  clone.querySelectorAll(".ql-size-huge").forEach((el) => {
+    el.style.fontSize = "32px";
+  });
+
+  // CODE BLOCK
+  clone.querySelectorAll(".ql-code-block").forEach((el) => {
+    el.style.fontFamily = "monospace";
+    el.style.background = "#1e1e1e";
+    el.style.color = "#ffffff";
+    el.style.padding = "10px";
+    el.style.borderRadius = "6px";
+    el.style.whiteSpace = "pre-wrap";
+    el.style.display = "block";
+    el.style.margin = "8px 0";
+  });
+
+  // BLOCKQUOTE
+  clone.querySelectorAll("blockquote").forEach((el) => {
+    el.style.borderLeft = "4px solid #ccc";
+    el.style.paddingLeft = "12px";
+    el.style.marginLeft = "0";
+    el.style.color = "#555";
+  });
+
+  // LINKS
+  clone.querySelectorAll("a").forEach((el) => {
+    el.style.color = "#2563eb";
+    el.style.textDecoration = "underline";
+  });
+  // =====================================
+  // CONVERTE CHECKLIST DO QUILL
+  // FIX TOTAL LISTAS (CHECK + BULLET)
   // =====================================
 
   clone.querySelectorAll("li").forEach((li, i) => {
@@ -1303,9 +1359,21 @@ exportPdfBtn.onclick = () => {
 
   const opt = {
     margin: 10,
-    html2canvas: { scale: 2 },
-    jsPDF: { unit: "mm", format: "a4" },
-    pagebreak: { mode: ["avoid-all"] },
+
+    html2canvas: {
+      scale: 2,
+      useCORS: true,
+    },
+
+    jsPDF: {
+      unit: "mm",
+      format: "a4",
+      orientation: "portrait",
+    },
+
+    pagebreak: {
+      mode: ["css", "legacy"],
+    },
   };
 
   html2pdf()
@@ -1934,7 +2002,7 @@ function customConfirm(message, title = "Confirmação") {
 
 // =====================================
 // GLOBAL SHORTCUT -> NEW TAB
-// =====================================
+// ===================================
 
 window.electronAPI.onNewTabShortcut(() => {
   addTabBtn.click();

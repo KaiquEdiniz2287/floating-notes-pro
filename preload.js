@@ -17,3 +17,4 @@ contextBridge.exposeInMainWorld("electronAPI", {
   onUpdateDownloaded: (cb) => ipcRenderer.on("update-downloaded", () => cb()),
   restartApp: () => ipcRenderer.send("restart-app"),
 });
+/* ---------------------------------- */
