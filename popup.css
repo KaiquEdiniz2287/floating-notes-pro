@@ -39,14 +39,44 @@ body.light {
   display: flex;
   align-items: flex-end;
   gap: 2px;
-  overflow-x: auto;
+
   flex: 1;
+
+  overflow-x: auto;
+  overflow-y: hidden;
+
+  scrollbar-width: thin;
+  scrollbar-color: #4b5563 transparent;
+
+  scroll-behavior: smooth;
+
+  padding-bottom: 1px;
+}
+
+/* CHROME / EDGE / ELECTRON */
+
+#tabs-wrapper::-webkit-scrollbar {
+  height: 5px;
+}
+
+#tabs-wrapper::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+#tabs-wrapper::-webkit-scrollbar-thumb {
+  background: #4b5563;
+  border-radius: 999px;
+}
+
+#tabs-wrapper::-webkit-scrollbar-thumb:hover {
+  background: #6b7280;
 }
 
 #tabs {
   display: flex;
   align-items: flex-end;
   gap: 2px;
+  min-height: 40px;
 }
 
 .tab {
@@ -144,7 +174,7 @@ button {
   background: transparent;
   border-radius: 8px;
   border: none;
-  width: 180px;
+  width: 100px;
   color: white;
 }
 

@@ -357,7 +357,7 @@ const toolbar = document.querySelector(".ql-toolbar");
 // elementos que NÃO devem roubar foco do editor
 const keepEditorFocusSelectors = [
   "button",
-  ".tab",
+  /* ".tab", */
   "#topbar",
   "#actions",
   "#tabs-wrapper",
@@ -378,12 +378,16 @@ document.addEventListener("mousedown", (e) => {
     return;
   }
 
-  // elementos decorativos/UI
   const shouldKeepFocus = keepEditorFocusSelectors.some((selector) =>
     e.target.closest(selector),
   );
 
   if (!shouldKeepFocus) return;
+
+  // NÃO bloqueia drag das tabs
+  if (e.target.closest(".tab")) {
+    return;
+  }
 
   // salva posição atual
   const range = quill.getSelection();
@@ -955,6 +959,7 @@ function renderTabs() {
 
     // CLICK = TROCAR ABA
     tab.addEventListener("click", async (e) => {
+      if (isDraggingTab) return;
       if (isEditing) return;
 
       clearTimeout(clickTimer);
@@ -1483,26 +1488,50 @@ window.addEventListener("beforeunload", async () => {
 // DRAG TABS
 // =====================================
 
-new Sortable(tabsEl, {
-  animation: 150,
+let tabsSortable = null;
+let isDraggingTab = false;
 
-  ghostClass: "dragging-tab",
+function initTabsSortable() {
+  const tabs = document.getElementById("tabs");
 
-  draggable: ".tab",
+  if (!tabs) return;
 
-  onEnd: async (evt) => {
-    // MOVE TAB NO ARRAY
+  if (tabsSortable) {
+    tabsSortable.destroy();
+  }
 
-    const moved = state.tabs.splice(evt.oldIndex, 1)[0];
+  tabsSortable = new Sortable(tabs, {
+    animation: 150,
 
-    state.tabs.splice(evt.newIndex, 0, moved);
+    draggable: ".tab",
 
-    // AJUSTA CURRENT TAB
+    ghostClass: "sortable-ghost",
+    chosenClass: "sortable-chosen",
+    dragClass: "dragging-tab",
 
-    if (state.currentTab === evt.oldIndex) {
-      state.currentTab = evt.newIndex;
-    } else {
-      if (evt.oldIndex < state.currentTab && evt.newIndex >= state.currentTab) {
+    forceFallback: false,
+    fallbackTolerance: 3,
+
+    onStart: () => {
+      isDraggingTab = true;
+    },
+
+    onEnd: async (evt) => {
+      isDraggingTab = false;
+
+      if (evt.oldIndex === evt.newIndex) return;
+
+      const movedTab = state.tabs.splice(evt.oldIndex, 1)[0];
+
+      state.tabs.splice(evt.newIndex, 0, movedTab);
+
+      // mantém aba atual correta
+      if (state.currentTab === evt.oldIndex) {
+        state.currentTab = evt.newIndex;
+      } else if (
+        evt.oldIndex < state.currentTab &&
+        evt.newIndex >= state.currentTab
+      ) {
         state.currentTab--;
       } else if (
         evt.oldIndex > state.currentTab &&
@@ -1510,13 +1539,13 @@ new Sortable(tabsEl, {
       ) {
         state.currentTab++;
       }
-    }
 
-    renderTabs();
+      renderTabs();
 
-    await saveState();
-  },
-});
+      await saveState();
+    },
+  });
+}
 
 // =====================================
 // REPLACE SYSTEM
@@ -2016,3 +2045,4 @@ loadState();
 updateColorUI();
 setupCustomColorPickers();
 initResponsiveToolbar();
+initTabsSortable();
